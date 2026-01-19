@@ -7335,7 +7335,7 @@ Typeset using \LaTeX\ {\bf modern} style in AASTeX7.0.1}
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 {\footnotesize\textsc{\@journalinfo}}\par
-{\footnotesize Typeset using \LaTeX\ {\bf twocolumn} style in AASTeX7.0.1}
+%%{\footnotesize Typeset using \LaTeX\ {\bf twocolumn} style in AASTeX7.0.1}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 \else
 \preprintsty@sw{
