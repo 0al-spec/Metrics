@@ -20,12 +20,12 @@ cd SIB
 pdflatex metrics.tex
 ```
 
-After making changes to `metrics.tex` or `sample701.bib`, always recompile to verify no errors were introduced.
+After making changes to `metrics.tex` or `metrics.bib`, always recompile to verify no errors were introduced.
 
 ## Validation
 
 - After editing `metrics.tex`, check the compilation output for warnings or errors. Common issues include unmatched braces, missing packages, or broken citations.
-- If you modify citations, ensure they exist in `sample701.bib` with correct formatting.
+- If you modify citations, ensure they exist in `metrics.bib` with correct formatting.
 - The document uses the `aastex701` class (astronomy/astrophysics format). Respect existing formatting conventions.
 
 ## Document structure
@@ -44,7 +44,7 @@ After making changes to `metrics.tex` or `sample701.bib`, always recompile to ve
 ## File conventions
 
 - Main content: `metrics.tex`
-- Citations: `sample701.bib` (BibTeX format)
+- Citations: `metrics.bib` (BibTeX format)
 - Do not commit generated files: `metrics.pdf`, `metrics.aux`, `metrics.log`, `metrics.out`, `metrics.fdb_latexmk`, `metrics.fls`
 - The `.gitignore` should already exclude these; verify before committing.
 

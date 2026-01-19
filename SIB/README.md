@@ -26,7 +26,7 @@ pdflatex metrics.tex
 ## Project Files
 
 - `metrics.tex` - Main LaTeX document
-- `sample701.bib` - Bibliography and references
+- `metrics.bib` - Bibliography and references
 - `aastex701.cls` - AAS LaTeX document class
 - `aasjournalv7.bst` - AAS bibliography style
 - `Makefile` - Build automation

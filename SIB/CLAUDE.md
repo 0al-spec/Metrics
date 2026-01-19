@@ -41,7 +41,7 @@ latexmk -C metrics.tex
 ## Document Structure
 
 - **Main document**: `metrics.tex` - Contains the complete paper
-- **Bibliography**: `sample701.bib` - References and citations
+- **Bibliography**: `metrics.bib` - References and citations
 - **LaTeX class**: `aastex701.cls` - AAS LaTeX document class (astronomy/astrophysics formatting)
 - **Bibliography style**: `aasjournalv7.bst` - AAS bibliography style
 - **Output**: `metrics.pdf` - Compiled PDF
@@ -73,5 +73,5 @@ The repository is licensed under CC BY 4.0 (Creative Commons Attribution 4.0 Int
 ## Common Tasks
 
 - **Edit the paper**: Modify `metrics.tex` directly
-- **Update bibliography**: Edit `sample701.bib` and recompile
+- **Update bibliography**: Edit `metrics.bib` and recompile
 - **Recompile with clean state**: Run `latexmk -C && latexmk -pdf metrics.tex`
