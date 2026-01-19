@@ -1,0 +1,52 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+
+# Bibliography artifacts
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+
+# Index artifacts
+*.idx
+*.ilg
+*.ind
+
+# Glossary artifacts
+*.glo
+*.gls
+*.glg
+
+# Nomenclature artifacts
+*.nlo
+*.nls
+
+# Generated PDF (uncomment if you want to track the PDF)
+# *.pdf
+
+# Temporary files
+*.dvi
+*.ps
+*.eps
+*-converted-to.pdf
+
+# latexmk
+*.latexmain
+
+# Editor backup files
+*~
+*.bak
+*.swp
+.DS_Store
+
+# Overleaf/ShareLaTeX
+*.spl
