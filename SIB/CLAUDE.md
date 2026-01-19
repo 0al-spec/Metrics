@@ -55,6 +55,7 @@ The paper defines several key metrics:
 2. **Intent Yield (IY)**: `N_func / N_spec` - Observable functionality per unit intent
 3. **Intent Conversion Cost (ICC)**: `C_inf / N_spec` - Economic cost of AI-mediated intent realization
 4. **Functional Cost (FC)**: `C_inf / N_func` - Cost per unit of observable functionality
+5. **Operational Yield (OY)**: `N_func / N_calls` - Functionality per discrete non-tokenizable operation
 
 The paper explicitly emphasizes that these metrics are **non-normative** and diagnostic in nature—not intended for optimization, ranking, or performance evaluation.
 

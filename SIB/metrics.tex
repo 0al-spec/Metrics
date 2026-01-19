@@ -51,7 +51,8 @@ measured in lines of code, tokens, or normalized AST units.
 
 We define the inference footprint as the tuple
 $(C_{\mathrm{inf}}, T_{\mathrm{inf}}, N_{\mathrm{calls}})$,
-corresponding to monetary cost, token volume, and model invocations.
+corresponding to monetary cost, token volume, and non-tokenizable operations
+(e.g., external tool invocations, search queries, or discrete API actions).
 
 \section{Derived Metrics}
 
@@ -89,11 +90,23 @@ This metric reflects the economic cost of AI-mediated intent realization.
 
 \subsection{Functional Cost}
 
-Finally, the Functional Cost (FC) is given by
+The Functional Cost (FC) is given by
 
 \begin{equation}
 \mathrm{FC} \equiv \frac{C_{\mathrm{inf}}}{N_{\mathrm{func}}}.
 \end{equation}
+
+\subsection{Operational Yield}
+
+The Operational Yield (OY) is defined as
+
+\begin{equation}
+\mathrm{OY} \equiv \frac{N_{\mathrm{func}}}{N_{\mathrm{calls}}}.
+\end{equation}
+
+OY captures how much observable functionality is produced per discrete
+non-tokenizable operation. It characterizes the efficiency of
+intent-to-implementation conversion through the lens of operational effort.
 
 \section{Discussion}
 

@@ -34,12 +34,13 @@ pdflatex metrics.tex
 
 ## The SIB Framework
 
-The paper defines four non-normative diagnostic metrics:
+The paper defines five non-normative diagnostic metrics:
 
 1. **SIB** (Specification-Implementation Balance): `N_spec / S_impl`
 2. **IY** (Intent Yield): `N_func / N_spec`
 3. **ICC** (Intent Conversion Cost): `C_inf / N_spec`
 4. **FC** (Functional Cost): `C_inf / N_func`
+5. **OY** (Operational Yield): `N_func / N_calls`
 
 These metrics are designed for observability and analysis, not optimization or performance evaluation.
 
