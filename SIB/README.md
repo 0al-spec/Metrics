@@ -56,7 +56,7 @@ If you build on this work, please cite it with the following BibTeX template (re
 @misc{egorMetrics2024,
   author       = {Egor Author},
   title        = {Title of Your GitHub Project},
-  howpublished = {\url{https://github.com/youruser/yourrepo}},
+  howpublished = {https://github.com/youruser/yourrepo},
   year         = {2024},
   note         = {Version x.y, accessed Month Day, Year}
 }
