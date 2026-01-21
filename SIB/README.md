@@ -47,3 +47,17 @@ These metrics are designed for observability and analysis, not optimization or p
 ## License
 
 CC BY 4.0 (Creative Commons Attribution 4.0 International)
+
+## Citation
+
+If you build on this work, please cite it with the following BibTeX template (replace the placeholders with the actual title, year, URL, etc.):
+
+```bibtex
+@misc{egorMetrics2024,
+  author       = {Egor Author},
+  title        = {Title of Your GitHub Project},
+  howpublished = {\url{https://github.com/youruser/yourrepo}},
+  year         = {2024},
+  note         = {Version x.y, accessed Month Day, Year}
+}
+```
