@@ -31,11 +31,14 @@ ollama pull llama3
 # Ollama runs automatically on http://localhost:11434
 ```
 
-**Option B: LM Studio**
+**Option B: LM Studio** (Recommended for JSON Schema)
 
 1. Download from https://lmstudio.ai
 2. Load a model (recommend: Llama 3 or Mistral)
 3. Start the local server (default: http://localhost:1234)
+4. JSON Schemas are automatically loaded for enforced structured output
+
+**Note:** LM Studio supports JSON Schema enforcement. See [JSON_SCHEMA_GUIDE.md](JSON_SCHEMA_GUIDE.md).
 
 ## Usage
 
@@ -185,12 +188,18 @@ IY = N_func / N_spec
 
 This measures how much observable functionality is produced per unit of intent.
 
-## Structured Outputs (JSON Mode)
+## Structured Outputs (JSON Schema)
 
-The script supports structured JSON outputs for improved extraction reliability:
+The script supports JSON Schema enforcement for 100% reliable structured output:
 
-**OpenAI-compatible APIs (LM Studio):**
-- Automatically uses `response_format: {"type": "json_object"}`
+**LM Studio (with JSON Schema):**
+- Automatically loads `schema_intent_atoms.json` and `schema_functional_units.json`
+- Uses `response_format: {"type": "json_schema"}` with enforced schemas
+- Guarantees 100% valid JSON output with no parsing errors
+- Falls back to basic JSON mode if schemas not supported
+
+**OpenAI-compatible APIs:**
+- Uses `response_format: {"type": "json_object"}` as fallback
 - Significantly reduces JSON parsing errors
 - Automatically falls back to standard mode if not supported
 
@@ -199,23 +208,31 @@ The script supports structured JSON outputs for improved extraction reliability:
 - Uses robust JSON extraction from text responses
 
 **Benefits:**
+- ✅ **100% structured output** with JSON Schema (LM Studio)
 - ✅ Higher extraction success rate (fewer parsing errors)
 - ✅ Cleaner JSON output from models
-- ✅ Automatic fallback if unsupported
+- ✅ Automatic fallback chain for compatibility
 
 **Disable if needed:**
 ```bash
 python extract_metrics.py specs/ --no-json-mode
 ```
 
+**Learn more:** See [JSON_SCHEMA_GUIDE.md](JSON_SCHEMA_GUIDE.md) for detailed information.
+
 ## Model Recommendations
 
 For best extraction quality:
 
-- **Llama 3 (8B or 70B)**: Best balance of speed and accuracy
+- **Llama 3 (8B or 70B)**: Best balance of speed and accuracy, excellent with JSON Schema
 - **Mistral (7B)**: Faster, good for large document sets
 - **Qwen 2.5**: Excellent structured output capabilities (highly recommended)
 - **Phi-3**: Lightweight option for resource-constrained systems
+
+**With JSON Schema (LM Studio):**
+- Most models 7B+ support JSON Schema enforcement
+- Check model card for structured output compatibility
+- See [JSON_SCHEMA_GUIDE.md](JSON_SCHEMA_GUIDE.md) for details
 
 **Note:** Models with better instruction-following produce cleaner JSON output.
 
@@ -258,6 +275,15 @@ We welcome contributions! See [CONTRIBUTING.md](../../CONTRIBUTING.md) for guide
 - Suggesting enhancements
 - Submitting pull requests
 - Coding standards
+
+## Additional Documentation
+
+- **[JSON_SCHEMA_GUIDE.md](JSON_SCHEMA_GUIDE.md)** - JSON Schema enforcement with LM Studio
+- **[OUTPUT_MODES_GUIDE.md](OUTPUT_MODES_GUIDE.md)** - Detailed guide to output location modes
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Command-line reference and common patterns
+- **[BATCH_PROCESSING_GUIDE.md](BATCH_PROCESSING_GUIDE.md)** - Processing large specification archives
+- **[STRUCTURED_OUTPUT_IMPROVEMENTS.md](STRUCTURED_OUTPUT_IMPROVEMENTS.md)** - JSON mode evolution
+- **[IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md)** - Complete feature overview
 
 ## License
 

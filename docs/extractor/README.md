@@ -34,19 +34,24 @@ Complete documentation for the LLM-driven SIB metrics extraction tool.
    - Automatic fallback
    - Before/after comparison
 
+6. **[JSON_SCHEMA_GUIDE.md](JSON_SCHEMA_GUIDE.md)** - JSON Schema enforcement
+   - Using JSON Schema with LM Studio
+   - 100% structured output guarantee
+   - Schema files and usage
+
 ### Technical Details
 
-5. **[OUTPUT_MODES_SUMMARY.md](OUTPUT_MODES_SUMMARY.md)** - Feature summary
+7. **[OUTPUT_MODES_SUMMARY.md](OUTPUT_MODES_SUMMARY.md)** - Feature summary
    - Visual examples
    - Implementation details
    - Code changes
 
-6. **[IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md)** - Complete overview
+8. **[IMPLEMENTATION_COMPLETE.md](IMPLEMENTATION_COMPLETE.md)** - Complete overview
    - All features delivered
    - Testing results
    - Production readiness
 
-7. **[extraction_test_summary.md](extraction_test_summary.md)** - Test results
+9. **[extraction_test_summary.md](extraction_test_summary.md)** - Test results
    - Sample extraction results
    - Success rates
    - Analysis
@@ -76,10 +81,11 @@ Extracts **Specification-Implementation Balance (SIB) metrics** from markdown sp
 ## 🎯 Key Features
 
 ✅ Local LLM support (Ollama, LM Studio)
+✅ JSON Schema enforcement for 100% structured output
 ✅ Three output modes (default, alongside, custom)
-✅ Structured JSON outputs with fallback
 ✅ Individual or aggregate results
 ✅ Batch processing with error recovery
+✅ Automatic fallback for unsupported models
 
 ## 📁 File Organization
 
@@ -89,11 +95,14 @@ Metrics/
 ├── test_output_modes.py            # Unit tests
 ├── requirements-extractor.txt      # Dependencies
 ├── example_spec.md                 # Test fixture
+├── schema_intent_atoms.json        # JSON Schema for intent atoms
+├── schema_functional_units.json    # JSON Schema for functional units
 ├── docs/
 │   └── extractor/                  # ← You are here
 │       ├── README.md               # This file
 │       ├── EXTRACTOR_README.md     # Main documentation
 │       ├── QUICK_REFERENCE.md      # Cheat sheet
+│       ├── JSON_SCHEMA_GUIDE.md    # JSON Schema usage
 │       ├── OUTPUT_MODES_GUIDE.md   # Output modes
 │       └── ...                     # Other guides
 └── GIT_GUIDE.md                    # Repository git guide

@@ -53,6 +53,7 @@ class LocalLLMClient:
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.use_json_mode = use_json_mode
+        self.schemas = self._load_schemas()
 
         # Auto-detect API type
         if api_type == "auto":
@@ -60,8 +61,27 @@ class LocalLLMClient:
         else:
             self.api_type = api_type
 
-        json_status = " with JSON mode" if use_json_mode and self.api_type == "openai" else ""
+        json_status = " with JSON Schema" if use_json_mode and self.api_type == "openai" and self.schemas else " with JSON mode"
         print(f"Using {self.api_type} API format{json_status}")
+
+    def _load_schemas(self) -> Dict[str, Any]:
+        """Load JSON schemas for structured output"""
+        schemas = {}
+        script_dir = Path(__file__).parent
+
+        # Load intent atoms schema
+        intent_schema_path = script_dir / "schema_intent_atoms.json"
+        if intent_schema_path.exists():
+            with open(intent_schema_path) as f:
+                schemas["intent_atoms"] = json.load(f)
+
+        # Load functional units schema
+        func_schema_path = script_dir / "schema_functional_units.json"
+        if func_schema_path.exists():
+            with open(func_schema_path) as f:
+                schemas["functional_units"] = json.load(f)
+
+        return schemas
 
     def _detect_api_type(self) -> str:
         """Detect whether this is Ollama or OpenAI-compatible API"""
@@ -85,8 +105,14 @@ class LocalLLMClient:
         print("Warning: Could not detect API type, defaulting to Ollama format")
         return "ollama"
 
-    def generate(self, prompt: str, temperature: float = 0.1) -> str:
-        """Generate response from local LLM"""
+    def generate(self, prompt: str, temperature: float = 0.1, schema_name: Optional[str] = None) -> str:
+        """Generate response from local LLM
+
+        Args:
+            prompt: The prompt to send to the LLM
+            temperature: Sampling temperature
+            schema_name: Optional schema name ("intent_atoms" or "functional_units") for structured output
+        """
 
         if self.api_type == "openai":
             # OpenAI-compatible API (LM Studio)
@@ -97,8 +123,18 @@ class LocalLLMClient:
                 "max_tokens": 2000
             }
 
-            # Enable JSON mode for structured outputs
-            if self.use_json_mode:
+            # Enable JSON Schema mode for structured outputs (LM Studio format)
+            if self.use_json_mode and schema_name and schema_name in self.schemas:
+                payload["response_format"] = {
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": f"{schema_name}_response",
+                        "strict": True,
+                        "schema": self.schemas[schema_name]
+                    }
+                }
+            elif self.use_json_mode:
+                # Fallback to basic JSON mode if schema not available
                 payload["response_format"] = {"type": "json_object"}
 
             endpoint = f"{self.base_url}/v1/chat/completions"
@@ -111,7 +147,7 @@ class LocalLLMClient:
             except requests.exceptions.HTTPError as e:
                 # If JSON mode fails with 400, retry without it
                 if e.response.status_code == 400 and self.use_json_mode:
-                    print(f"Warning: JSON mode not supported, falling back to standard mode")
+                    print(f"Warning: JSON Schema mode not supported, falling back to standard mode")
                     self.use_json_mode = False
                     payload.pop("response_format", None)
                     response = requests.post(endpoint, json=payload, timeout=120)
@@ -178,7 +214,7 @@ OUTPUT FORMAT (JSON):
 Respond ONLY with valid JSON, no additional text.
 """
 
-        response = self.llm.generate(prompt)
+        response = self.llm.generate(prompt, schema_name="intent_atoms")
 
         # Parse JSON response
         try:
@@ -237,7 +273,7 @@ OUTPUT FORMAT (JSON):
 Respond ONLY with valid JSON, no additional text.
 """
 
-        response = self.llm.generate(prompt)
+        response = self.llm.generate(prompt, schema_name="functional_units")
 
         # Parse JSON response
         try:

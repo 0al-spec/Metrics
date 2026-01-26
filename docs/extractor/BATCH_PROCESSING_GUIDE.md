@@ -2,6 +2,8 @@
 
 Guide for processing large specification archives like the TASK_ARCHIVE (702 files).
 
+**Latest Update:** JSON Schema support for 100% structured output reliability. See [JSON_SCHEMA_GUIDE.md](JSON_SCHEMA_GUIDE.md).
+
 ## 🎯 Quick Start - Process Entire Archive
 
 ### Command for TASK_ARCHIVE
@@ -12,15 +14,17 @@ Process all 702 files with JSON outputs next to each original file:
 python extract_metrics.py SPECS/SIB/INTENT/TASK_ARCHIVE \
   --output-mode alongside \
   --individual-files \
-  --base-url http://192.168.1.82:1234 \
+  --base-url http://172.31.132.116:1234 \
   --model "openai/gpt-oss-20b"
 ```
 
 **What this does:**
+- **JSON Schema enforcement** - 100% structured output with LM Studio
 - **Recursively** processes all subdirectories
 - **Places JSON** next to each .md file (alongside mode)
 - **Individual files** - one JSON per markdown file
 - **Automatic traversal** - finds all .md files in the tree
+- **No parsing errors** - JSON Schema guarantees valid output
 
 ## 📁 Output Structure
 

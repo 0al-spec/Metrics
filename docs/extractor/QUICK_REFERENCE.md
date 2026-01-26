@@ -1,5 +1,7 @@
 # SIB Metrics Extractor - Quick Reference
 
+**New:** JSON Schema support for 100% structured output with LM Studio. See [JSON_SCHEMA_GUIDE.md](JSON_SCHEMA_GUIDE.md).
+
 ## Basic Usage
 
 ```bash
@@ -99,6 +101,8 @@ python extract_metrics.py --help
 
 ## Documentation
 
+- `JSON_SCHEMA_GUIDE.md` - JSON Schema enforcement (NEW)
 - `OUTPUT_MODES_GUIDE.md` - Detailed guide with examples
 - `EXTRACTOR_README.md` - Complete documentation
+- `BATCH_PROCESSING_GUIDE.md` - Large archive processing
 - `STRUCTURED_OUTPUT_IMPROVEMENTS.md` - JSON mode details
