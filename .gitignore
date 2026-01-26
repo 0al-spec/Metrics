@@ -1,1 +1,82 @@
+# Claude Code local files
 .claude/*.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.log
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# SIB Metrics Extractor outputs
+sib_metrics.json
+*_metrics.json
+task_archive_*.json
+test_results.json
+example_structured.json
+task_b*.json
+extraction.log
+
+# Temporary extraction outputs
+/task_metrics/
+/metrics_output/
+/build/metrics/
+output/
+
+# LaTeX build artifacts (SIB paper)
+SIB/*.aux
+SIB/*.bbl
+SIB/*.blg
+SIB/*.fdb_latexmk
+SIB/*.fls
+SIB/*.log
+SIB/*.out
+SIB/*.synctex.gz
+SIB/*.toc
+SIB/*.nav
+SIB/*.snm
+SIB/*.vrb
+SIB/*.bcf
+SIB/*.run.xml
+SIB/*.lof
+SIB/*.lot
+SIB/*.synctex(busy)
+SIB/.texpadtmp/
+
+# Keep the PDF output (uncomment to ignore)
+# SIB/metrics.pdf
+
+# Test outputs
+test_output/
+*.test.json
