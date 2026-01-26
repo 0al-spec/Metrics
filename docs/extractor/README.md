@@ -23,7 +23,13 @@ Complete documentation for the LLM-driven SIB metrics extraction tool.
    - Detailed usage examples
    - Use cases and patterns
 
-4. **[STRUCTURED_OUTPUT_IMPROVEMENTS.md](STRUCTURED_OUTPUT_IMPROVEMENTS.md)** - JSON mode
+4. **[BATCH_PROCESSING_GUIDE.md](BATCH_PROCESSING_GUIDE.md)** - Large archive processing
+   - Processing 700+ files
+   - Progress monitoring
+   - Batch strategies
+   - Verification and quality checks
+
+5. **[STRUCTURED_OUTPUT_IMPROVEMENTS.md](STRUCTURED_OUTPUT_IMPROVEMENTS.md)** - JSON mode
    - Structured output support
    - Automatic fallback
    - Before/after comparison
