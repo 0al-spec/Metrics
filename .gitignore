@@ -1,6 +1,8 @@
 # Claude Code local files
 .claude/*.local.json
 
+SPECS/SIB/INTENT/TASK_ARCHIVE/
+
 # Python
 __pycache__/
 *.py[cod]
