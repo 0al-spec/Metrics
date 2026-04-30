@@ -91,23 +91,6 @@ Selecting appropriate values for these weights is itself an empirical
 exercise and should reflect domain expertise and context-specific
 priorities.
 
-\subsection{Terminology Conventions}
-
-To avoid ambiguity, we explicitly separate two notions used throughout this paper.
-
-\textbf{Economic cost} refers to monetary inference expenditure and is tied to
-$C_{\mathrm{inf}}$. Metrics such as Intent Conversion Cost (ICC), Functional
-Cost (FC), and other cost-weighted variants intentionally retain the term
-\emph{cost}.
-
-\textbf{Implementation effort} refers to expected engineering work and
-realization complexity required to turn intent into stable software artifacts.
-In pre-implementation analysis this is proxied by $I^\ast(u)$ and related
-quantities (e.g., $\Delta I^\ast$ and defect-potential aggregates).
-
-Unless explicitly marked as economic, realization-oriented quantities in this
-framework are described using the term \emph{effort}.
-
 \section{Analytic Framework}
 
 \subsection{Specification as Intent Atoms}
@@ -139,6 +122,23 @@ We define the inference footprint as the tuple
 $(C_{\mathrm{inf}}, T_{\mathrm{inf}}, N_{\mathrm{calls}})$,
 corresponding to monetary cost, token volume, and non-tokenizable operations
 (e.g., external tool invocations, search queries, or discrete API actions).
+
+\subsection{Terminology Conventions}
+
+To avoid ambiguity, we explicitly separate two notions used throughout this paper.
+
+\textbf{Economic cost} refers to monetary inference expenditure and is tied to
+$C_{\mathrm{inf}}$. Metrics such as Intent Conversion Cost (ICC), Functional
+Cost (FC), and other cost-weighted variants intentionally retain the term
+\emph{cost}.
+
+\textbf{Implementation effort} refers to expected engineering work and
+realization complexity required to turn intent into stable software artifacts.
+In pre-implementation analysis this is proxied by $I^\ast(u)$ and related
+quantities (e.g., $\Delta I^\ast$ and defect-potential aggregates).
+
+Unless explicitly marked as economic, realization-oriented quantities in this
+framework are described using the term \emph{effort}.
 
 \subsection{Premises and Assumptions}
 
@@ -219,7 +219,7 @@ through the lens of operational effort.
 
 The base SIB formalism is still meaningful before code exists,
 provided that implementation is replaced by an observable proxy for
-future realization burden.
+future realization cost.
 This allows diagnostic reasoning to begin in the specification phase,
 rather than only after executable artifacts are already present.
 
@@ -275,7 +275,7 @@ P_{\mathrm{eff}}(u) \equiv P(u)\cdot \mathrm{PVC}(u).
 
 \subsection{Expected Implementation Potential}
 
-Before implementation exists, local realization burden is not directly measurable.
+Before implementation exists, local realization cost is not directly measurable.
 We therefore introduce an expected implementation potential,
 \begin{equation}
 I^\ast(u),
@@ -309,7 +309,7 @@ More importantly, we define an effective pre-implementation balance:
 \end{equation}
 
 This metric characterizes how much \emph{verifiable} intent is present
-relative to the expected implementation burden required to realize it.
+relative to the expected cost of realizing it.
 
 \subsection{Premise Balance}
 
@@ -324,7 +324,7 @@ by verified or explicitly examined premises.
 
 \subsection{Differential Pre-Implementation Balance}
 
-As specification evolves, both explicit intent and expected realization burden may change.
+As specification evolves, both explicit intent and expected realization cost may change.
 We therefore define a differential pre-implementation balance:
 \begin{equation}
 \mathrm{dSIB}^\ast(u,t) \equiv
@@ -365,7 +365,7 @@ For the pre-implementation phase, the analogous quantity is
 \frac{\Delta I^\ast(u,t)}
 {\Delta S(u,t)+\varepsilon},
 \end{equation}
-which measures how quickly expected realization burden is rising
+which measures how quickly expected realization cost is rising
 relative to the growth of explicit specification.
 
 \subsection{Premise Load and Premise Density}
@@ -423,7 +423,7 @@ friction, stability, and defect-related observables.
 
 \subsection{Cognitive Load Proxy}
 
-Local structural complexity may increase the practical effort of turning intent
+Local structural complexity may increase the practical cost of turning intent
 into stable implementation.
 We therefore define a cognitive load proxy:
 \begin{equation}
@@ -588,13 +588,13 @@ We define False Progress Mass as
 FPM represents the amount of implementation work performed
 after the root defect had already entered the trajectory.
 
-\subsection{Rework Cost}
+\subsection{Rework Effort (Rework Cost)}
 
 Let $\rho \in [0,1]$ denote the salvage ratio:
 the fraction of post-root work that survives after correction.
-We define the rework cost as
+We define Rework Effort (equivalently, rework cost) as
 \begin{equation}
-\mathrm{RWC} \equiv (1-\rho)\cdot \mathrm{FPM}.
+\mathrm{RE} \equiv \mathrm{RWC} \equiv (1-\rho)\cdot \mathrm{FPM}.
 \end{equation}
 
 \subsection{Retro Verification Overhead}
@@ -691,7 +691,7 @@ Similarly, the mass of premises implicated in the defective path is
 \paragraph{Defect Potential Cost}
 
 Even if code has not yet been written, a late-discovered value defect
-may already have accumulated substantial expected realization burden.
+may already have accumulated substantial expected realization cost.
 We therefore define
 \begin{equation}
 \mathrm{DPC} \equiv \sum_{k=j}^{n} I^\ast(v_k),
@@ -756,7 +756,7 @@ and remains meaningful after failures are discovered.
 These metrics are explicitly non-normative.
 They are not intended for optimization, ranking, or performance evaluation.
 Instead, they provide a structured lens for analyzing
-semantic allocation, realization burden, process stability,
+semantic allocation, realization cost, process stability,
 and retrospective defect structure in software systems.
 
 An important consequence is that not all defects must be treated
