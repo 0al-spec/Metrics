@@ -138,6 +138,8 @@ C_{\mathrm{build}}(S,t) \equiv \sum_{u \in S} C_{\mathrm{build}}(u,t).
 
 $C_{\mathrm{build}}$ is the direct economic footprint of producing a concrete
 artifact state from intent under the current toolchain configuration.
+It is an observed quantity under the active pricing surface, not a structural
+prediction about future maintenance or change cost.
 
 \subsection{Change-Cost Proxy (Graph-Based)}
 
@@ -158,6 +160,10 @@ where $\kappa$ is a project-calibration coefficient and $\varepsilon>0$ stabiliz
 the expression. This quantity is diagnostic: its meaning lies in relative
 comparisons and longitudinal drift.
 
+Unlike $C_{\mathrm{inf}}$, $C_{\mathrm{verify}}$, and $C_{\mathrm{build}}$,
+this quantity is not observed spend. It is a structural proxy derived from
+graph topology, verifiability, and stability signals.
+
 \subsection{Total Ownership Proxy}
 
 Finally, we define a composite \emph{ownership proxy} over a selection $S$:
@@ -168,9 +174,10 @@ C_{\mathrm{build}}(S) + \lambda \sum_{u \in S} C_{\mathrm{change}}(u),
 \end{equation}
 
 where $\lambda$ encodes the chosen support horizon (how much weight is assigned
-to future change cost). $C_{\mathrm{own}}$ is not an estimate guarantee; it is an
-economic lens for comparing structural alternatives and observing drift under
-AI-mediated construction.
+to the future change-cost proxy). $C_{\mathrm{own}}$ is not an estimate guarantee
+and should not be interpreted as direct monetary spend. It is an economic lens
+for comparing structural alternatives and observing drift under AI-mediated
+construction.
 
 \subsection{Interpretation Note}
 
@@ -178,6 +185,10 @@ All economic quantities are non-normative observables. Absolute values depend on
 pricing, tooling, and policy configuration. The recommended mode of use is
 comparative: deltas ($\Delta$), drift velocities ($\mathrm{DV}$), distribution
 shifts across the graph, and cost bands under controlled configurations.
+
+Every reported economic artifact should preserve its provenance: pricing surface
+identifier, model and tool versions, time window, currency or unit convention,
+and whether each displayed quantity is observed spend or a derived proxy.
 
 \subsection{Map View Encoding (UI Mapping)}
 
@@ -228,10 +239,10 @@ Under a selected scope $S\subseteq V$ and time window $t$, the UI encodes:
   where $w(u,v)$ is an application-defined coupling weight (dependency strength,
   co-change frequency, or interface-touch severity).
 
-\item \textbf{Scope totals (header KPI, non-normative):}
+\item \textbf{Scope economics (non-normative totals):}
   the current selection $S$ reports aggregated economics
   \begin{equation}
-  \mathrm{Header}(S) \Leftarrow
+  \mathrm{ScopeTotals}(S) \Leftarrow
   \Bigl(C_{\mathrm{inf}}(S,t),\, C_{\mathrm{build}}(S,t),\, C_{\mathrm{own}}(S)\Bigr),
   \end{equation}
   always accompanied by the active pricing surface and time window.
