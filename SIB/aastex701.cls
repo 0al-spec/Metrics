@@ -7317,7 +7317,7 @@ ltxgrid%
 \raggedright
 {\sc Draft version \today}\\[2pt]
 {\footnotesize
-Typeset using \LaTeX\ {\bf modern} style in AASTeX7.0.1}
+}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 }
 \else
@@ -7326,7 +7326,7 @@ Typeset using \LaTeX\ {\bf modern} style in AASTeX7.0.1}
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 {\footnotesize\textsc{\@journalinfo}}\par
-{\footnotesize Typeset using \LaTeX\ {\bf preprint2} style in AASTeX7.0.1}
+%%{\footnotesize Typeset using \LaTeX\ {\bf preprint2} style in AASTeX7.0.1}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 \else
 %%
@@ -7342,21 +7342,21 @@ Typeset using \LaTeX\ {\bf modern} style in AASTeX7.0.1}
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 {\footnotesize\textsc{\@journalinfo}}\par
-{\footnotesize Typeset using \LaTeX\ {\bf preprint} style in AASTeX7.0.1}
+%%{\footnotesize Typeset using \LaTeX\ {\bf preprint} style in AASTeX7.0.1}
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 }{
   \manuscriptsty@sw{%
     \vspace*{-\headsep}\vspace*{\headheight}
     \footnotesize
         {\footnotesize\textsc{\@journalinfo}}\par
-        {\footnotesize Typeset using \LaTeX\ {\bf manuscript} style in AASTeX7.0.1}
+        %%{\footnotesize Typeset using \LaTeX\ {\bf manuscript} style in AASTeX7.0.1}
         \par\vspace*{-\baselineskip}\vspace*{0.625in}
   }{
 %% Default
 \vspace*{-\headsep}\vspace*{\headheight}
 \footnotesize
 {\footnotesize\textsc{\@journalinfo}}\par
-{\footnotesize Typeset using \LaTeX\ {\bf default} style in AASTeX7.0.1}%% default style
+%%{\footnotesize Typeset using \LaTeX\ {\bf default} style in AASTeX7.0.1}%% default style
 \par\vspace*{-\baselineskip}\vspace*{0.625in}
 }}
 \fi\fi\fi
