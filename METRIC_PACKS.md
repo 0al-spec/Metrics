@@ -8,16 +8,27 @@ core state:
 
 ```text
 SpecGraph core state
-  -> Metric Pack: SIB
-  -> Metric Pack: SIB_FULL
-  -> Metric Pack: Economic Observability
-  -> Metric Pack: future trace/review/security packs
+  -> Metric Pack `sib` (SIB)
+  -> Metric Pack `sib_full` (SIB Full Metrics)
+  -> Metric Pack `sib_economic_observability` (Economic Observability)
+  -> future `metric_pack_id` entries for trace/review/security packs
   -> metric artifacts, dashboard overlays, gaps, and proposal pressure
 ```
 
 Metric packs may produce findings, gaps, overlays, and proposal pressure. They
 must not directly mutate canonical graph state or enforce policy without a
 separate reviewable proposal and operational adapter.
+
+## Pack Registry
+
+`metric_pack_id` is the canonical machine identifier. Display names and source
+paths are descriptive metadata and should not be used as stable identifiers.
+
+| `metric_pack_id` | Display name | Source path |
+| --- | --- | --- |
+| `sib` | SIB | `SIB/metrics.tex` |
+| `sib_full` | SIB Full Metrics | `SIB_FULL/sib_full_metrics.tex` |
+| `sib_economic_observability` | SIB Economic Observability | `SIB_ECONOMIC_OBSERVABILITY/sib_economic_observability.tex` |
 
 ## Pack Layers
 
