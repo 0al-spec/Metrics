@@ -1,0 +1,244 @@
+\documentclass{aastex701}
+\journalinfo{}
+
+\PassOptionsToPackage{hypertexnames=false}{hyperref}
+\PassOptionsToPackage{noabbrev}{cleveref}
+\PassOptionsToPackage{noabbrev}{cleveref}
+
+\usepackage{amssymb}
+\usepackage{textcomp}
+\usepackage{fix-cm}
+\usepackage{type1cm}
+\usepackage{lmodern}
+% Remove the specific nameref warning by temporarily restoring the kernel \label
+% before hyperref/nameref is initialized, then restore the class's \label.
+\makeatletter
+\let\AAS@label\label
+\let\label\ltx@label
+\makeatother
+
+% Some engines/classes do not define \euro; keep a safe alias.
+\providecommand{\euro}{\texteuro}
+
+% Silence the specific nameref warning about \label redefinition.
+\usepackage{silence}
+\WarningFilter{nameref}{The definition of \\label has changed!}
+
+\begin{document}
+
+\title{Economic Observability (Non-Normative)}
+
+\author{Egor Merkushev}
+\email{gorkaedeep@gmail.com}
+\affiliation{Independent Researcher}
+
+\begin{abstract}
+We introduce a non-normative formulation for observing and comparing the
+economic footprint of AI-mediated software construction across specification
+graph nodes and time windows. The goal is diagnostic: to expose inference,
+verification, and ownership proxies as observable quantities under a chosen
+pricing surface, enabling longitudinal and comparative analysis rather than
+optimization prescriptions.
+\end{abstract}
+
+\keywords{software engineering --- AI-assisted programming --- software metrics --- observability --- cost modeling}
+
+\section{Economic Observability}
+
+\subsection{Pricing Surface and Footprints}
+
+Let each specification node be denoted by $u \in V$, and let $t$ denote an
+iteration window (e.g., a generation run, a PR cycle, or a bounded time slice).
+
+We assume a configurable \emph{pricing surface} for the active toolchain:
+
+\begin{itemize}
+\item $\mathcal{M}$ --- the set of AI models available in the product.
+\item $\mathcal{J}$ --- the set of external tools (search, build, test, OCR, etc.).
+\item $p_m$ --- price per token (or billable token unit) for model $m \in \mathcal{M}$.
+\item $q_m$ --- fixed per-call price for model $m$ (optional; $q_m=0$ if none).
+\item $r_j$ --- price per invocation for tool $j \in \mathcal{J}$ (optional).
+\end{itemize}
+
+For each node $u$ and window $t$, we observe the footprint tuple
+\[
+\left( T_m(u,t),\, N_m(u,t) \right)_{m \in \mathcal{M}},\quad
+\left( N_{\mathrm{tool},j}(u,t) \right)_{j \in \mathcal{J}},
+\]
+where $T_m(u,t)$ is the (billable) token volume under model $m$,
+$N_m(u,t)$ is the number of model calls, and $N_{\mathrm{tool},j}(u,t)$ is
+the number of invocations of external tool $j$.
+
+\subsection{Node Inference Cost}
+
+We define the \emph{node inference cost} as the pricing-functional applied to
+the observed footprint:
+
+\begin{equation}
+C_{\mathrm{inf}}(u,t) \equiv
+\sum_{m \in \mathcal{M}}
+\Bigl(p_m\,T_m(u,t) + q_m\,N_m(u,t)\Bigr)
+\;+\;
+\sum_{j \in \mathcal{J}} r_j\,N_{\mathrm{tool},j}(u,t).
+\end{equation}
+
+This value is directly displayable on the map as currency (\$, \euro, etc.)
+under a fixed pricing surface.
+
+\subsection{Graph (Subgraph) Inference Cost}
+
+For any subgraph or selection $S \subseteq V$ (e.g., a feature branch, epic,
+release slice), we define:
+
+\begin{equation}
+C_{\mathrm{inf}}(S,t) \equiv \sum_{u \in S} C_{\mathrm{inf}}(u,t).
+\end{equation}
+
+\subsection{Differential Economics}
+
+Economic observability is intended to be interpreted comparatively. We define
+the discrete delta and drift-velocity operators for inference cost:
+
+\begin{equation}
+\Delta C_{\mathrm{inf}}(u; t_k) \equiv
+C_{\mathrm{inf}}(u,t_k) - C_{\mathrm{inf}}(u,t_{k-1}),
+\end{equation}
+
+\begin{equation}
+\mathrm{DV}_{C}(u,t) \equiv \frac{d\,C_{\mathrm{inf}}(u,t)}{dt},
+\qquad
+\mathrm{DV}_{C}(u,t_k) \approx \frac{C_{\mathrm{inf}}(u,t_k)-C_{\mathrm{inf}}(u,t_{k-1})}{t_k-t_{k-1}}.
+\end{equation}
+
+Analogous operators apply to any node- or graph-level metric.
+
+\subsection{Verification Cost}
+
+We define a separate (configurable) verification cost functional:
+
+\begin{equation}
+C_{\mathrm{verify}}(u,t) \equiv
+\sum_{\ell \in \mathcal{L}} s_\ell\,N_{\mathrm{verify},\ell}(u,t),
+\end{equation}
+
+where $\mathcal{L}$ is the set of verifiers (CI workflows, device farm runs,
+property test suites, performance regressions, etc.),
+$N_{\mathrm{verify},\ell}(u,t)$ is the number of verification runs of type $\ell$,
+and $s_\ell$ is the unit price for $\ell$ (or an internal cost proxy).
+
+\subsection{Total Build Cost}
+
+We define the \emph{build cost} for a node or selection as:
+
+\begin{equation}
+C_{\mathrm{build}}(u,t) \equiv C_{\mathrm{inf}}(u,t) + C_{\mathrm{verify}}(u,t),
+\qquad
+C_{\mathrm{build}}(S,t) \equiv \sum_{u \in S} C_{\mathrm{build}}(u,t).
+\end{equation}
+
+$C_{\mathrm{build}}$ is the direct economic footprint of producing a concrete
+artifact state from intent under the current toolchain configuration.
+
+\subsection{Change-Cost Proxy (Graph-Based)}
+
+We introduce a non-normative \emph{change-cost proxy} to quantify how costly
+future modifications may become due to graph coupling and instability.
+Let $\mathrm{WCR}_k(u)$ denote the weighted change radius within hop distance $k$,
+and let $\mathrm{SVC}(u)$ and $\mathrm{CSI}(u)$ denote intent verifiability and
+checkpoint stability, respectively (defined elsewhere).
+
+\begin{equation}
+C_{\mathrm{change}}(u) \equiv
+\kappa\,\mathrm{WCR}_k(u)\,
+\frac{1}{\mathrm{SVC}(u)+\varepsilon}\,
+\frac{1}{\mathrm{CSI}(u)+\varepsilon},
+\end{equation}
+
+where $\kappa$ is a project-calibration coefficient and $\varepsilon>0$ stabilizes
+the expression. This quantity is diagnostic: its meaning lies in relative
+comparisons and longitudinal drift.
+
+\subsection{Total Ownership Proxy}
+
+Finally, we define a composite \emph{ownership proxy} over a selection $S$:
+
+\begin{equation}
+C_{\mathrm{own}}(S) \equiv
+C_{\mathrm{build}}(S) + \lambda \sum_{u \in S} C_{\mathrm{change}}(u),
+\end{equation}
+
+where $\lambda$ encodes the chosen support horizon (how much weight is assigned
+to future change cost). $C_{\mathrm{own}}$ is not an estimate guarantee; it is an
+economic lens for comparing structural alternatives and observing drift under
+AI-mediated construction.
+
+\subsection{Interpretation Note}
+
+All economic quantities are non-normative observables. Absolute values depend on
+pricing, tooling, and policy configuration. The recommended mode of use is
+comparative: deltas ($\Delta$), drift velocities ($\mathrm{DV}$), distribution
+shifts across the graph, and cost bands under controlled configurations.
+
+\subsection{Map View Encoding (UI Mapping)}
+
+We treat the map as a \emph{projection} of observability signals onto visual channels.
+Let $x(u)\in\mathbb{R}^2$ denote the fixed layout coordinate of node $u$ in the map view.
+Under a selected scope $S\subseteq V$ and time window $t$, the UI encodes:
+
+\begin{itemize}
+\item \textbf{Fill color (economic heat):}
+  node fill is mapped to instantaneous inference cost
+  \begin{equation}
+  \mathrm{Color}(u) \Leftarrow C_{\mathrm{inf}}(u,t),
+  \end{equation}
+  typically via a monotone colormap with optional banding.
+
+\item \textbf{Node radius (growth / pressure):}
+  node size reflects a chosen differential economic signal, by default
+  \begin{equation}
+  \mathrm{Radius}(u) \Leftarrow \left|\Delta C_{\mathrm{inf}}(u; t_k)\right|
+  \quad\text{or}\quad
+  \mathrm{Radius}(u) \Leftarrow \left|\mathrm{DV}_{C}(u,t)\right|.
+  \end{equation}
+
+\item \textbf{Halo / influence ring (blast radius):}
+  an outer ring visualizes change impact at hop distance $k$,
+  \begin{equation}
+  \mathrm{Halo}(u) \Leftarrow \mathrm{WCR}_k(u),
+  \end{equation}
+  where the ring radius or intensity increases with weighted reachability.
+
+\item \textbf{Border style (confidence / stability):}
+  border opacity or dash pattern encodes verification and stability,
+  \begin{equation}
+  \mathrm{Border}(u) \Leftarrow \bigl(\mathrm{SVC}(u),\,\mathrm{CSI}(u,t)\bigr),
+  \end{equation}
+  where low $\mathrm{SVC}$ (weak verifiability) and low $\mathrm{CSI}$ (unstable checkpoints)
+  are rendered with reduced opacity and/or higher visual ``noise''.
+
+\item \textbf{Edge emphasis (coupling cost flow):}
+  when edges are shown, thickness or glow corresponds to the marginal
+  cost transfer associated with coupling, e.g.
+  \begin{equation}
+  \mathrm{EdgeWeight}(u,v) \Leftarrow
+  \Delta C_{\mathrm{inf}}(u; t_k)\,\mathbf{1}_{(u\rightarrow v)}
+  \quad\text{or}\quad
+  w(u,v),
+  \end{equation}
+  where $w(u,v)$ is an application-defined coupling weight (dependency strength,
+  co-change frequency, or interface-touch severity).
+
+\item \textbf{Scope totals (header KPI, non-normative):}
+  the current selection $S$ reports aggregated economics
+  \begin{equation}
+  \mathrm{Header}(S) \Leftarrow
+  \Bigl(C_{\mathrm{inf}}(S,t),\, C_{\mathrm{build}}(S,t),\, C_{\mathrm{own}}(S)\Bigr),
+  \end{equation}
+  always accompanied by the active pricing surface and time window.
+\end{itemize}
+
+The mapping is explicitly \emph{lens-based}: the user may choose which economic signal drives each channel (color, radius, halo, border), while the system
+preserves comparability by fixing the pricing surface and time window for a
+given analysis session.
+
+\end{document}

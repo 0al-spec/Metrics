@@ -1,0 +1,1101 @@
+\documentclass[twocolumn]{aastex701}
+\journalinfo{}
+\begin{document}
+
+\title{Specification--Implementation Balance:\\
+A Diagnostic Framework for AI-Mediated Software Construction}
+
+\author{Egor Merkushev}
+\email{gorkaedeep@gmail.com}
+\affiliation{Independent Researcher}
+
+\begin{abstract}
+We introduce a non-normative diagnostic framework for observing the balance
+between specification (intent), implementation (code), and AI inference cost
+in modern AI-assisted software development.
+Rather than proposing optimization targets or productivity metrics,
+the framework is designed to expose structural and economic shifts
+in the process of intent-to-implementation conversion.
+
+We further extend the base Specification--Implementation Balance (SIB)
+formalism in three directions.
+First, we define a pre-implementation layer for situations where code
+does not yet exist, but specification structure, assumptions, and expected
+implementation complexity are already observable.
+Second, we introduce process and structural observability metrics that
+characterize verification pressure, friction, stability, cognitive load,
+and change propagation.
+Third, we propose retrospective defect metrics that make it possible
+to trace late-discovered failures or value misalignments back to their
+earlier specification roots.
+Taken together, these metrics form a longitudinal observability stack
+for AI-mediated software construction.
+\end{abstract}
+
+\keywords{software engineering --- specification-driven development --- AI-assisted programming --- software metrics}
+
+\section*{Introduction}
+
+The increasing use of large language models in software development
+has blurred the boundary between specification and implementation.
+Code is no longer written exclusively by humans, while specifications
+increasingly act as executable or semi-executable artifacts.
+This shift challenges traditional code-centric metrics such as LOC,
+velocity, or test coverage.
+
+In this work, we propose a set of observability metrics that characterize
+\emph{where semantic intent resides} and \emph{how it is transformed into
+executable systems}.
+The resulting framework is explicitly diagnostic rather than normative:
+it is intended to support observation, comparison, and qualitative reasoning,
+not optimization targets or human evaluation.
+
+The central idea is that the balance between specification and implementation
+can be used as a foundational observable.
+From this balance, additional diagnostic layers follow naturally:
+pre-implementation observables when no code yet exists,
+process observables once intent begins to convert into executable artifacts,
+and retrospective defect observables when late discoveries reveal
+that earlier assumptions, specifications, or implementations were unsound.
+
+\section{Analytic Scope and Notation}
+
+We use two complementary viewpoints.
+
+At the project level, we reason in terms of aggregate quantities:
+the amount of explicit specification, implementation, and observable functionality.
+
+At the local level, we reason over a graph of nodes.
+A node $u \in V$ may represent a requirement, feature step,
+architectural decision, subsystem, or implementation unit,
+depending on the phase of work.
+Edges express relevant relations such as refinement, dependency,
+influence, or causal progression.
+Time is denoted by $t$, and $\varepsilon > 0$ is a stabilizer constant.
+
+When we write $\mathcal{N}(u)$, we refer to a chosen \emph{neighborhood}
+around node $u$ used for local gradient computations, such as the
+cognitive load gradient.
+The embedding $x(u)\in\mathbb{R}^2$ denotes an optional geometric placement
+of nodes on a two-dimensional map for visualization.
+The symbol $\mathrm{dist}(u,v)$ denotes the graph distance between nodes
+$u$ and $v$ using selected edge types.
+
+Throughout the paper we employ weighting coefficients such as
+$\alpha,\beta,\gamma,\delta,\lambda$.
+These coefficients are not universal constants but rather
+calibratable parameters that modulate the relative importance of
+different factors (e.g., regenerations versus rollbacks, boundaries versus
+modes, or inference costs) within a given project or organization.
+Selecting appropriate values for these weights is itself an empirical
+exercise and should reflect domain expertise and context-specific
+priorities.
+
+\section{Analytic Framework}
+
+\subsection{Specification as Intent Atoms}
+
+We represent specification as a set of discrete \emph{Intent Atoms},
+denoted $N_{\mathrm{spec}}$, composed of:
+user stories, acceptance criteria, invariants, and architectural decisions.
+
+At node granularity, let $\mathcal{A}(u)$ denote the set of Intent Atoms
+attached to node $u$.
+We define the local specification signal as
+\begin{equation}
+S(u) \equiv |\mathcal{A}(u)|.
+\end{equation}
+
+\subsection{Implementation as Functional Output}
+
+Implementation is represented by two orthogonal quantities:
+(i) the observable functional output $N_{\mathrm{func}}$,
+and (ii) the implementation size $S_{\mathrm{impl}}$,
+measured in lines of code, tokens, or normalized AST units.
+
+At node granularity, we denote by $I(u,t)$ a local implementation signal,
+for example a churn-weighted implementation delta or normalized change mass.
+
+\subsection{AI Inference Footprint}
+
+We define the inference footprint as the tuple
+$(C_{\mathrm{inf}}, T_{\mathrm{inf}}, N_{\mathrm{calls}})$,
+corresponding to monetary cost, token volume, and non-tokenizable operations
+(e.g., external tool invocations, search queries, or discrete API actions).
+
+\subsection{Terminology Conventions}
+
+To avoid ambiguity, we explicitly separate two notions used throughout this paper.
+
+\textbf{Economic cost} refers to monetary inference expenditure and is tied to
+$C_{\mathrm{inf}}$. Metrics such as Intent Conversion Cost (ICC), Functional
+Cost (FC), and other cost-weighted variants intentionally retain the term
+\emph{cost}.
+
+\textbf{Implementation effort} refers to expected engineering work and
+realization complexity required to turn intent into stable software artifacts.
+In pre-implementation analysis this is proxied by $I^\ast(u)$ and related
+quantities (e.g., $\Delta I^\ast$ and defect-potential aggregates).
+
+Unless explicitly marked as economic, realization-oriented quantities in this
+framework are described using the term \emph{effort}.
+
+\subsection{Premises and Assumptions}
+
+Many development trajectories are driven not only by explicit intent,
+but also by assumptions about user value, architecture, integrations,
+constraints, or product direction.
+We therefore introduce a second local set,
+\begin{equation}
+\mathcal{P}(u),
+\end{equation}
+the set of \emph{Premise Atoms} associated with node $u$.
+
+Premise Atoms express minimal assumptions such as:
+“users prefer this interaction pattern”, “integration $X$ is available”,
+or “stakeholders accept this workflow”.
+
+We define the local premise signal as
+\begin{equation}
+P(u) \equiv |\mathcal{P}(u)|.
+\end{equation}
+
+\section{Derived Metrics}
+
+\subsection{Specification--Implementation Balance}
+
+We define the Specification--Implementation Balance (SIB) as
+
+\begin{equation}
+\mathrm{SIB} \equiv \frac{N_{\mathrm{spec}}}{S_{\mathrm{impl}}}.
+\end{equation}
+
+This quantity characterizes the distribution of semantic intent
+between explicit specification and executable realization.
+No optimal value is assumed.
+
+\subsection{Intent Yield}
+
+The Intent Yield (IY) is defined as
+
+\begin{equation}
+\mathrm{IY} \equiv \frac{N_{\mathrm{func}}}{N_{\mathrm{spec}}}.
+\end{equation}
+
+IY captures how much observable functionality is produced per unit intent.
+
+\subsection{Intent Conversion Cost}
+
+The Intent Conversion Cost (ICC) is defined as
+
+\begin{equation}
+\mathrm{ICC} \equiv \frac{C_{\mathrm{inf}}}{N_{\mathrm{spec}}}.
+\end{equation}
+
+This metric reflects the economic cost of AI-mediated intent realization.
+
+\subsection{Functional Cost}
+
+The Functional Cost (FC) is given by
+
+\begin{equation}
+\mathrm{FC} \equiv \frac{C_{\mathrm{inf}}}{N_{\mathrm{func}}}.
+\end{equation}
+
+\subsection{Operational Yield}
+
+The Operational Yield (OY) is defined as
+
+\begin{equation}
+\mathrm{OY} \equiv \frac{N_{\mathrm{func}}}{N_{\mathrm{calls}}}.
+\end{equation}
+
+OY captures how much observable functionality is produced per discrete
+non-tokenizable operation.
+It characterizes the efficiency of intent-to-implementation conversion
+through the lens of operational effort.
+
+\section{Pre-Implementation Extension}
+
+The base SIB formalism is still meaningful before code exists,
+provided that implementation is replaced by an observable proxy for
+future realization cost.
+This allows diagnostic reasoning to begin in the specification phase,
+rather than only after executable artifacts are already present.
+
+\subsection{Specification Verifiability}
+
+Not all written specification contributes equally to confidence.
+Some Intent Atoms are operationalized through acceptance criteria,
+explicit checks, stakeholder confirmations, contradiction checks,
+or other forms of verifiability.
+
+We therefore define the Spec Verifiability Coverage of node $u$ as
+\begin{equation}
+N_{\mathrm{ver}}(u) \equiv
+\sum_{a \in \mathcal{A}(u)} \mathbf{1}_{\mathrm{ver}}(a),
+\end{equation}
+the number of verifiable Intent Atoms in node $u$.
+
+Then,
+\begin{equation}
+\mathrm{SVC}(u) \equiv
+\frac{N_{\mathrm{ver}}(u)}
+{|\mathcal{A}(u)|}.
+\end{equation}
+
+This yields the effective specification signal
+\begin{equation}
+S_{\mathrm{eff}}(u) \equiv S(u)\cdot \mathrm{SVC}(u).
+\end{equation}
+
+Given the definitions above, for nodes with $S(u)>0$ we have
+$S_{\mathrm{eff}}(u) \equiv N_{\mathrm{ver}}(u)$.
+We retain the product form $S(u)\cdot \mathrm{SVC}(u)$ to make explicit
+the decomposition into total specification mass and verifiability coverage.
+For nodes with $S(u)=0$, $\mathrm{SVC}(u)$ may be set to $0$ by convention.
+
+\subsection{Premise Verifiability}
+
+Similarly, not all assumptions are equally trustworthy.
+Some premises are tested, confirmed, or explicitly ratified,
+while others remain implicit or weakly supported.
+
+We define Premise Verifiability Coverage as
+\begin{equation}
+\mathrm{PVC}(u) \equiv
+\frac{\sum_{p \in \mathcal{P}(u)} \mathbf{1}_{\mathrm{check}}(p)}
+{|\mathcal{P}(u)|}.
+\end{equation}
+
+This yields the effective premise signal
+\begin{equation}
+P_{\mathrm{eff}}(u) \equiv P(u)\cdot \mathrm{PVC}(u).
+\end{equation}
+
+\subsection{Expected Implementation Potential}
+
+Before implementation exists, local realization cost is not directly measurable.
+We therefore introduce an expected implementation potential,
+\begin{equation}
+I^\ast(u),
+\end{equation}
+which serves as a proxy for the future mass of implementation implied by node $u$.
+
+A generic form is
+\begin{equation}
+I^\ast(u) \equiv
+\alpha B(u) + \beta M(u) + \gamma D(u) + \delta X(u),
+\end{equation}
+where $B(u)$ is the number of architectural boundaries touched,
+$M(u)$ is the number of modes or scenarios,
+$D(u)$ is the number of external dependencies,
+and $X(u)$ is the number of exceptions or special cases.
+
+This quantity should be treated as a disciplined proxy rather than a precise estimate.
+
+\subsection{Pre-Implementation Balance}
+
+Replacing implementation with expected implementation potential,
+we obtain the pre-implementation analogue of SIB:
+\begin{equation}
+\mathrm{SIB}^\ast(u) \equiv \frac{S(u)}{I^\ast(u)+\varepsilon}.
+\end{equation}
+
+More importantly, we define an effective pre-implementation balance:
+\begin{equation}
+\mathrm{SIB}_{\mathrm{eff}}^\ast(u) \equiv
+\frac{S_{\mathrm{eff}}(u)}{I^\ast(u)+\varepsilon}.
+\end{equation}
+
+This metric characterizes how much \emph{verifiable} intent is present
+relative to the expected cost of realizing it.
+
+\subsection{Premise Balance}
+
+Since specification may rest on assumptions that are themselves weakly grounded,
+we define a premise-oriented balance:
+\begin{equation}
+\mathrm{PB}(u) \equiv \frac{P_{\mathrm{eff}}(u)}{S(u)+\varepsilon}.
+\end{equation}
+
+PB describes how much of the local intent is supported
+by verified or explicitly examined premises.
+
+\subsection{Differential Pre-Implementation Balance}
+
+As specification evolves, both explicit intent and expected realization cost may change.
+We therefore define a differential pre-implementation balance:
+\begin{equation}
+\mathrm{dSIB}^\ast(u,t) \equiv
+\frac{\Delta S(u,t)}{\Delta I^\ast(u,t)+\varepsilon}.
+\end{equation}
+
+This captures whether growing implementation expectations
+are matched by corresponding clarification of intent.
+
+\section{Process and Structural Observability}
+
+Once specification evolves over time, and especially once code begins to emerge,
+balance alone is not sufficient.
+A second diagnostic layer is needed to characterize how the process behaves:
+whether intent is verifiable, whether changes create excessive review burden,
+how broadly impact propagates, and how stably the system returns to a
+satisfactory state.
+
+\subsection{Review Pressure}
+
+At the code-aware stage, let $\Delta S_{\mathrm{impl}}(u,t)$ denote
+local implementation change volume,
+and let $\Delta N_{\mathrm{spec}}(u,t)$ denote the change in
+intent-bearing specification units.
+We define Review Pressure as
+\begin{equation}
+\mathrm{RVP}(u,t) \equiv
+\frac{\Delta S_{\mathrm{impl}}(u,t)}
+{\Delta N_{\mathrm{spec}}(u,t)+\varepsilon}.
+\end{equation}
+
+This measures how much implementation change is being introduced
+per unit of clarified intent.
+
+For the pre-implementation phase, the analogous quantity is
+\begin{equation}
+\mathrm{SRP}(u,t) \equiv
+\frac{\Delta I^\ast(u,t)}
+{\Delta S(u,t)+\varepsilon},
+\end{equation}
+which measures how quickly expected realization cost is rising
+relative to the growth of explicit specification.
+
+\subsection{Premise Load and Premise Density}
+
+The absolute load of assumptions attached to a node is given by
+\begin{equation}
+\mathrm{PL}(u) \equiv P(u).
+\end{equation}
+
+A normalized view is Premise Density:
+\begin{equation}
+\mathrm{PD}(u) \equiv \frac{P(u)}{S(u)+\varepsilon}.
+\end{equation}
+
+These metrics help expose when local intent is supported by
+a large and potentially fragile network of assumptions.
+
+\subsection{Probabilistic Friction}
+
+Let $N_{\mathrm{calls\_stable}}(u)$ denote the number of attempts,
+runs, or inference iterations needed until node $u$ reaches a stable state.
+We define the Probabilistic Friction Index as
+\begin{equation}
+\mathrm{PFI}(u) \equiv
+\frac{N_{\mathrm{calls\_stable}}(u)}
+{|\mathcal{A}(u)|+\varepsilon}.
+\end{equation}
+
+A cost-weighted variant is
+\begin{equation}
+\mathrm{PFI}_C(u) \equiv
+\frac{C_{\mathrm{inf\_stable}}(u)}
+{|\mathcal{A}(u)|+\varepsilon}.
+\end{equation}
+
+PFI characterizes how many iterations are required to stabilize
+a unit of declared intent.
+
+\subsection{Drift Velocity}
+
+For any metric $m$, we define its drift velocity as
+\begin{equation}
+\mathrm{DV}_m(u,t) \equiv \frac{d\,m(u,t)}{dt}.
+\end{equation}
+
+In discrete form,
+\begin{equation}
+\mathrm{DV}_m(u,t_k) \approx
+\frac{m(u,t_k)-m(u,t_{k-1})}
+{t_k-t_{k-1}}.
+\end{equation}
+
+This allows longitudinal reasoning over balance, verifiability,
+friction, stability, and defect-related observables.
+
+\subsection{Cognitive Load Proxy}
+
+Local structural complexity may increase the practical cost of turning intent
+into stable implementation.
+We therefore define a cognitive load proxy:
+\begin{equation}
+\mathrm{CLP}(u) \equiv
+\alpha\,\deg(u) + \beta\,B(u) + \gamma\,M(u),
+\end{equation}
+where $\deg(u)$ is the local graph degree,
+$B(u)$ is the number of boundaries touched,
+and $M(u)$ is the number of modes or variants.
+
+CLP is diagnostic rather than psychological:
+it approximates the structural density that a human or machine must navigate.
+
+\subsection{Cognitive Load Gradient}
+
+If nodes are embedded on a 2D map $x(u)\in\mathbb{R}^2$,
+we define a local gradient of cognitive load as
+\begin{equation}
+\mathrm{CLG}(u) \equiv
+\sum_{v\in\mathcal{N}(u)}
+\frac{\mathrm{CLP}(v)-\mathrm{CLP}(u)}
+{\|x(v)-x(u)\|+\varepsilon}.
+\end{equation}
+
+This quantity reflects how abruptly structural complexity changes
+around a node.
+
+\subsection{Change Impact Radius}
+
+Let $\mathrm{dist}(u,v)$ denote graph distance in a chosen projection.
+We define the unweighted change radius as
+\begin{equation}
+\mathrm{CR}_k(u) \equiv
+\left| \{v \in V : \mathrm{dist}(u,v)\le k\} \right|.
+\end{equation}
+
+A weighted version is
+\begin{equation}
+\mathrm{WCR}_k(u) \equiv
+\sum_{\mathrm{dist}(u,v)\le k} w(v),
+\end{equation}
+where $w(v)$ may be chosen as $\mathrm{CLP}(v)$,
+expected cost, local implementation mass, or another diagnostic proxy.
+
+Together, these quantities characterize how widely
+a change or assumption can propagate.
+
+\subsection{Checkpoint Stability}
+
+Let, on a time window $t$,
+$N_{\mathrm{regen}}(u,t)$ be the number of regenerations or restarts,
+$N_{\mathrm{rollback}}(u,t)$ the number of rollbacks,
+$N_{\mathrm{fail}}(u,t)$ the number of failed verification runs,
+and $N_{\mathrm{steps}}(u,t)$ the total number of process steps.
+We define the Checkpoint Stability Index as
+\begin{equation}
+\mathrm{CSI}(u,t) \equiv
+1 -
+\frac{
+\alpha N_{\mathrm{regen}}(u,t) +
+\beta N_{\mathrm{rollback}}(u,t) +
+\gamma N_{\mathrm{fail}}(u,t)
+}{
+N_{\mathrm{steps}}(u,t)+\varepsilon
+}.
+\end{equation}
+
+The weights $\alpha,\beta,\gamma$ allow a project to emphasise
+regenerations, rollbacks, or failures differently depending on their
+perceived severity.
+
+We further define Time-to-Stable:
+\begin{equation}
+\mathrm{TTS}(u) \equiv t^\star - t_0,
+\end{equation}
+where $t^\star$ is the first time at which a chosen stability predicate holds.
+
+\subsection{Specification Stability}
+
+Before executable implementation exists, an analogous diagnostic is required.
+Let $N_{\mathrm{reframe}}(u,t)$ be the number of specification reframings,
+$N_{\mathrm{premise\_change}}(u,t)$ the number of changes to premises,
+$N_{\mathrm{rejection}}(u,t)$ the number of product or stakeholder rejections,
+and $N_{\mathrm{steps}}(u,t)$ the number of discussion or refinement steps.
+We define the Specification Stability Index as
+\begin{equation}
+\mathrm{SSI}(u,t) \equiv
+1 -
+\frac{
+\alpha N_{\mathrm{reframe}}(u,t) +
+\beta N_{\mathrm{premise\_change}}(u,t) +
+\gamma N_{\mathrm{rejection}}(u,t)
+}{
+N_{\mathrm{steps}}(u,t)+\varepsilon
+}.
+\end{equation}
+
+Again, the weights $\alpha,\beta,\gamma$ reflect the relative impact
+of reframings, premise changes, or explicit rejections.
+
+Its temporal companion is Time-to-Stable-Spec:
+\begin{equation}
+\mathrm{TTSS}(u) \equiv t^\star - t_0,
+\end{equation}
+where $t^\star$ is the first time the specification is deemed sufficiently stable.
+
+\section{Retrospective Defect Metrics}
+
+The previous sections describe a forward-facing observability stack.
+A third layer becomes necessary once a defect is discovered late in time:
+we may wish to formally identify how far back the defect originated,
+how much subsequent work was built upon it,
+and what balance conditions existed near its root.
+
+This layer is retrospective by design.
+It does not measure current process state,
+but reconstructs latent cost and causal structure after a defect becomes visible.
+
+\subsection{Defect Classes}
+
+We distinguish two broad classes.
+
+\emph{Implementation Defects} are defects whose witness is executable:
+a test failure, violated invariant, broken behavior, failing integration,
+or other code-aware signal.
+
+\emph{Value or Specification Defects} are defects whose witness is semantic:
+a requirement reversal, stakeholder rejection, customer non-acceptance,
+or discovery that a key premise or concept was unsound,
+even if the implementation was locally correct.
+
+\subsection{Retrospective Structure}
+
+Consider a linearized trajectory
+$v_1 \to v_2 \to \dots \to v_n$.
+Suppose a defect is detected at $v_n$,
+but its root is determined to be $v_j$ for some $j<n$.
+Then the interval $[v_j, v_n]$ defines the defective segment.
+
+\subsection{Defect Depth}
+
+For both implementation and specification defects we define the defect depth as
+\begin{equation}
+\mathrm{DD} \equiv n-j.
+\end{equation}
+
+The value of $\mathrm{DD}$ counts how many steps or nodes separate
+the earliest point at which the defect could have been detected from
+the point at which it was actually detected.
+In implementation defects this root often corresponds to the first
+committed change that broke an invariant; in value defects it may be the
+earliest introduction of a contested premise.
+
+\subsection{False Progress Mass}
+
+Let $I(v_k)$ denote the implementation mass attached to node $v_k$.
+We define False Progress Mass as
+\begin{equation}
+\mathrm{FPM} \equiv \sum_{k=j+1}^{n} I(v_k).
+\end{equation}
+
+FPM represents the amount of implementation work performed
+after the root defect had already entered the trajectory.
+
+\subsection{Rework Effort (Rework Cost)}
+
+Let $\rho \in [0,1]$ denote the salvage ratio:
+the fraction of post-root work that survives after correction.
+We define Rework Effort (equivalently, rework cost) as
+\begin{equation}
+\mathrm{RE} \equiv \mathrm{RWC} \equiv (1-\rho)\cdot \mathrm{FPM}.
+\end{equation}
+
+\subsection{Retro Verification Overhead}
+
+Let the fix window following defect discovery incur additional
+stabilization attempts, failures, or rollbacks.
+We define
+\begin{equation}
+\mathrm{RVO} \equiv
+\Delta N_{\mathrm{calls\_stable}} +
+\Delta N_{\mathrm{fail}} +
+\Delta N_{\mathrm{rollback}}.
+\end{equation}
+
+A normalized form is
+\begin{equation}
+\mathrm{RVO}_N \equiv \frac{\mathrm{RVO}}{\mathrm{FPM}+\varepsilon}.
+\end{equation}
+
+\subsection{Defect Cost}
+
+A compact retrospective cost observable is
+\begin{equation}
+\mathrm{DC} \equiv \mathrm{RWC} + \lambda \cdot \mathrm{RVO},
+\end{equation}
+where $\lambda$ maps additional verification effort into a common cost scale.
+
+\subsection{Defect Balance at Root}
+
+To connect retrospective defects back to the forward observability stack,
+we define the Defect Balance at Root as
+\begin{equation}
+\mathrm{DBR} \equiv \mathrm{SIB}_{\mathrm{eff}}(v_j),
+\end{equation}
+or, in settings where the implementation-aware local balance
+is not yet available,
+\begin{equation}
+\mathrm{DBR}^\ast \equiv \mathrm{SIB}_{\mathrm{eff}}^\ast(v_j).
+\end{equation}
+
+These quantities make it possible to ask whether expensive future defects
+tend to emerge from distinctive balance regimes.
+
+\subsection{Defect Density Relative to Specification}
+
+At project or subsystem level, we may define
+\begin{equation}
+\mathrm{DDS}(u,t) \equiv
+\frac{N_{\mathrm{defects}}(u,t)}{S(u,t)+\varepsilon},
+\end{equation}
+or alternatively
+\begin{equation}
+\mathrm{DDS}_{\mathrm{eff}}(u,t) \equiv
+\frac{N_{\mathrm{defects}}(u,t)}{S_{\mathrm{eff}}(u,t)+\varepsilon}.
+\end{equation}
+
+This reflects how often defects are observed relative to the local mass
+of explicit intent.
+
+\subsection{Value and Premise Defects}
+
+Not all late defects correspond to broken implementation.
+A feature can be implemented correctly yet still be conceptually rejected.
+In such cases, the defect root should be traced through assumptions
+and specification premises rather than through executable failure.
+
+Let $\mathcal{P}_\times$ denote the set of contested premises identified
+after a value defect is discovered at $v_n$.
+If $\Delta \mathcal{P}(v_k)$ denotes newly introduced premises at step $k$,
+the earliest premise root is
+\begin{equation}
+j = \min \{k \le n :
+\Delta \mathcal{P}(v_k)\cap \mathcal{P}_\times \neq \varnothing \}.
+\end{equation}
+
+For such defects we also consider the following quantities.
+
+\paragraph{Defect Specification Cost}
+
+Let $S(v_k)$ denote the local specification signal.
+We define the defect specification cost as
+\begin{equation}
+\mathrm{DSC} \equiv \sum_{k=j}^{n} S(v_k),
+\end{equation}
+representing the mass of specification built on a defective premise or concept.
+
+\paragraph{Defect Premise Cost}
+
+Similarly, the mass of premises implicated in the defective path is
+\begin{equation}
+\mathrm{DPC}_P \equiv \sum_{k=j}^{n} P(v_k).
+\end{equation}
+
+\paragraph{Defect Potential Cost}
+
+Even if code has not yet been written, a late-discovered value defect
+may already have accumulated substantial expected realization cost.
+We therefore define
+\begin{equation}
+\mathrm{DPC} \equiv \sum_{k=j}^{n} I^\ast(v_k),
+\end{equation}
+the Defect Potential Cost.
+
+\paragraph{Defect Premise Balance at Root}
+
+To connect value defects back to the balance stack,
+we define
+\begin{equation}
+\mathrm{DPBR} \equiv \mathrm{PB}(v_j),
+\end{equation}
+which characterizes how well-supported the root premises were
+at the origin of the defective trajectory.
+
+\paragraph{Value and Premise Defect Densities}
+
+We define value defect density as
+\begin{equation}
+\mathrm{VDD}(u,t) \equiv
+\frac{N_{\mathrm{value\_defects}}(u,t)}
+{S(u,t)+\varepsilon},
+\end{equation}
+or, using effective specification,
+\begin{equation}
+\mathrm{VDD}_{\mathrm{eff}}(u,t) \equiv
+\frac{N_{\mathrm{value\_defects}}(u,t)}
+{S_{\mathrm{eff}}(u,t)+\varepsilon}.
+\end{equation}
+
+Premise defect density is
+\begin{equation}
+\mathrm{PDD}(u,t) \equiv
+\frac{N_{\mathrm{premise\_defects}}(u,t)}
+{P(u,t)+\varepsilon}.
+\end{equation}
+
+\section{Interpretive Summary}
+
+The framework now consists of three logically connected layers.
+
+First, the base SIB layer establishes where intent resides
+relative to implementation and what economic cost is incurred
+while converting intent into functionality.
+
+Second, the pre-implementation and process layers extend this view
+to situations where code has not yet been written,
+and to dynamic questions of verification pressure, friction,
+cognitive load, stability, and propagation.
+
+Third, the retrospective defect layer closes the loop by asking:
+when a future defect becomes visible, what earlier balance condition,
+premise structure, or specification trajectory allowed it to emerge?
+
+The framework is therefore longitudinal.
+It begins before code, continues through intent-to-implementation conversion,
+and remains meaningful after failures are discovered.
+
+\section{Discussion}
+
+These metrics are explicitly non-normative.
+They are not intended for optimization, ranking, or performance evaluation.
+Instead, they provide a structured lens for analyzing
+semantic allocation, realization cost, process stability,
+and retrospective defect structure in software systems.
+
+An important consequence is that not all defects must be treated
+as implementation failures.
+Some are failures of assumptions, specification framing,
+or product-value alignment.
+By admitting these classes explicitly, the framework can reason
+about late reversals even when executable code is locally correct.
+
+Over time, retrospective defect analysis may also support empirical discovery.
+If expensive defects cluster around certain balance regimes
+or weak premise support conditions, then balance metrics cease to be
+merely descriptive and become a basis for anticipatory diagnostics.
+Such use, however, remains observational rather than normative:
+the framework can identify recurrent patterns without prescribing
+a universal target value.
+
+\section{Conclusion}
+
+We argue that AI-assisted software development requires a shift
+from code-centric metrics toward intent-centric observability.
+Specification--Implementation Balance offers a compact formalism
+for reasoning about this transition.
+
+Its extensions proposed here show that the same logic can be carried
+into three adjacent domains:
+pre-implementation analysis before code exists,
+process and structural diagnostics while intent is being realized,
+and retrospective defect analysis after failures or conceptual reversals
+are discovered.
+
+Taken together, these layers form a coherent observability framework
+for AI-mediated software construction.
+
+\section{Relation to Existing Metrics}
+
+The metrics introduced in this work are not intended to replace existing
+software engineering metrics.
+Instead, they operate at a different abstraction level, focusing on
+semantic and economic mediation between specification, assumptions,
+implementation, and observable system behavior.
+
+\subsection{Function Points}
+
+Function Points (FP) measure externally observable functionality from the
+perspective of a system user, independent of implementation details.
+They are commonly used for cost estimation and productivity analysis.
+
+In our framework, Functional Units ($N_{\mathrm{func}}$) play a role
+analogous to Function Points, but with two important differences.
+First, Functional Units are treated as a \emph{proxy} for observable behavior
+rather than as a standardized accounting unit.
+Second, we explicitly avoid interpreting $N_{\mathrm{func}}$ as a productivity
+measure.
+
+The Functional Cost metric,
+\begin{equation}
+\mathrm{FC} \equiv \frac{C_{\mathrm{inf}}}{N_{\mathrm{func}}},
+\end{equation}
+can be viewed as an AI-era analogue of FP-based cost models.
+However, unlike classical FP analysis, FC is not intended to support
+estimation or optimization, but rather to expose the economic footprint
+of AI-mediated realization.
+
+\subsection{Requirements Traceability}
+
+Requirements traceability aims to establish explicit links between
+requirements, design artifacts, code, and tests.
+Traceability matrices and coverage ratios are commonly used to ensure
+completeness and compliance, particularly in safety-critical systems.
+
+Our framework does not attempt to enforce or reconstruct explicit trace links.
+Instead, it introduces aggregate and local observables that reflect the
+\emph{distribution of intent} and the stability of its realization.
+The Specification--Implementation Balance,
+\begin{equation}
+\mathrm{SIB} \equiv \frac{N_{\mathrm{spec}}}{S_{\mathrm{impl}}},
+\end{equation}
+can be interpreted as a coarse-grained signal of traceability drift:
+significant changes in SIB over time may indicate that intent is migrating
+toward implicit representation in code or, conversely, being externalized
+into specifications.
+
+Similarly, the retrospective quantities $\mathrm{DBR}$ and $\mathrm{DBR}^\ast$
+make it possible to ask not merely whether a requirement was implemented,
+but under what earlier balance conditions future defects emerged.
+
+Thus, while traceability answers the question
+\emph{``Is this requirement implemented?''},
+SIB addresses the orthogonal question
+\emph{``Where does the system's meaning primarily reside?''},
+and defect-root metrics extend this to
+\emph{``Under what structural conditions do future failures emerge?''}
+
+\subsection{Test and Coverage Metrics}
+
+Code coverage metrics (e.g., line, branch, or path coverage) quantify
+the extent to which implementation is exercised by tests.
+In behavior-driven or test-driven development, tests themselves often act
+as executable specifications.
+
+The Intent Yield metric,
+\begin{equation}
+\mathrm{IY} \equiv \frac{N_{\mathrm{func}}}{N_{\mathrm{spec}}},
+\end{equation}
+is complementary to coverage metrics.
+Coverage measures how much of the implementation is validated,
+whereas Intent Yield measures how effectively declared intent
+materializes as observable behavior.
+
+The Spec Verifiability Coverage metric,
+\begin{equation}
+\mathrm{SVC}(u) \equiv
+\frac{N_{\mathrm{ver}}(u)}
+{|\mathcal{A}(u)|},
+\end{equation}
+extends this logic to the specification side.
+It characterizes how much of explicit intent is actually bound
+to some operational check or validation channel.
+
+Importantly, a system may exhibit high code coverage while still showing
+low effective balance or weak premise support, indicating that executable
+artifacts are being validated more thoroughly than the underlying intent
+or assumptions that motivated them.
+
+\subsection{Architectural and Change Metrics}
+
+Architectural metrics often focus on coupling, dependency count,
+modularity, or change propagation.
+Our structural observables such as $\mathrm{CLP}$, $\mathrm{CLG}$,
+$\mathrm{CR}_k$, and $\mathrm{WCR}_k$ are closest in spirit to this family.
+
+The difference is that these quantities are explicitly embedded
+within an intent-centric diagnostic stack.
+They are not used as isolated structure scores,
+but as supporting observables that help explain how balance,
+verification, and defect emergence interact with system structure.
+
+\subsection{Summary of Conceptual Differences}
+
+Existing metrics predominantly operate within a single artifact domain
+(code, tests, architecture, or requirements).
+The framework proposed here is explicitly cross-artifact,
+cross-phase, and non-normative.
+
+Rather than optimizing for higher or lower values,
+the proposed metrics are intended to support longitudinal observation
+and qualitative reasoning about system evolution in AI-assisted
+and specification-driven development contexts.
+
+\section{Threats to Validity}
+
+As this work proposes a conceptual and diagnostic framework rather than
+an empirical evaluation, several limitations and threats to validity
+must be explicitly acknowledged.
+
+\subsection{Construct Validity}
+
+The proposed metrics rely on abstract quantities such as Intent Atoms
+($N_{\mathrm{spec}}$, $\mathcal{A}(u)$),
+Premise Atoms ($\mathcal{P}(u)$),
+Functional Units ($N_{\mathrm{func}}$),
+and Expected Implementation Potential ($I^\ast(u)$),
+all of which are proxy representations rather than direct semantic truth.
+
+Different teams or projects may adopt divergent decompositions of
+specifications into stories, criteria, assumptions, or decisions,
+leading to variability in absolute values.
+
+To mitigate this threat, the framework explicitly avoids normative
+interpretation of metric values and focuses on relative changes
+and longitudinal analysis within a single project.
+
+\subsection{Measurement Subjectivity}
+
+The identification and counting of Functional Units may be influenced
+by architectural style, domain granularity, or interface conventions.
+Likewise, the decomposition of specification into Intent Atoms and Premise Atoms
+may differ across teams.
+
+This framework therefore treats such counts as qualitative observables
+rather than standardized accounting units.
+
+\subsection{Pre-Implementation Estimation Risk}
+
+The pre-implementation extension depends on $I^\ast(u)$,
+an expected implementation potential.
+This quantity is inherently estimated rather than observed,
+and may be wrong in absolute terms.
+
+Its usefulness therefore depends on consistent estimation discipline
+within a project rather than on global accuracy.
+
+\subsection{Dependence on AI Tooling}
+
+Inference-related metrics such as Intent Conversion Cost, Functional Cost,
+Probabilistic Friction Cost, and related stabilization quantities
+depend on external AI model providers, pricing schemes,
+tool invocation styles, and context management strategies.
+
+Changes in model efficiency, pricing, or orchestration may alter
+absolute values without reflecting any intrinsic change in system structure.
+
+\subsection{Retrospective Root Ambiguity}
+
+Defect-root metrics assume that a meaningful root $v_j$ can be identified.
+In practice, causal structure may be distributed rather than singular,
+and the true root may be ambiguous.
+
+This is especially relevant for value defects,
+where conceptual rejection may emerge gradually rather than at a single point.
+For this reason, retrospective root observables should be interpreted
+as approximations to causal localization rather than exact forensic truth.
+
+\subsection{External Validity}
+
+The framework is primarily motivated by AI-assisted and
+specification-driven development workflows.
+Its applicability to traditional, fully human-authored development
+processes may be limited, particularly in contexts where specifications
+are informal or absent.
+
+However, the framework does not assume a specific programming language,
+model architecture, or development methodology,
+suggesting that its core concepts may generalize across a wide range
+of software systems.
+
+\subsection{Risk of Metric Misuse}
+
+As with any quantitative metric, there exists a risk of misuse if the
+proposed quantities are reinterpreted as performance indicators or
+optimization objectives.
+Such use would directly contradict the diagnostic intent of the
+framework and may lead to behavior consistent with Goodhart's law.
+
+We therefore emphasize that the proposed metrics are intended solely
+for observability and interpretive analysis,
+not for ranking, benchmarking, or incentive alignment.
+
+\section{Questions and Answers}
+\label{sec:q-and-a}
+
+In response to community feedback, this section collects several
+frequently asked questions and the corresponding clarifications.
+These questions highlight potential weaknesses of the proposed framework,
+and the answers explain how the current formulation attempts to address
+or mitigate them.
+
+\subsection{Subjectivity of basic units}
+\textbf{Question.} How can Intent Atoms, Premise Atoms, and Functional Units be
+treated as objective measurements when their identification is
+inherently subjective?
+
+\textbf{Answer.} The framework deliberately treats these units as proxy
+observables rather than absolute truths.  Different projects may
+decompose requirements differently; however, by working with relative
+ratios and time-series rather than absolute values, the framework
+focuses on internal consistency rather than cross-project comparison.
+Moreover, developing a reference vocabulary and taxonomy of intent and
+premise atoms is identified as future work to improve comparability.
+
+\subsection{Arbitrary weighting coefficients}
+\textbf{Question.} Many metrics rely on coefficients ($\alpha,\beta,\gamma,\delta,\lambda$) that appear arbitrary.  How should these be chosen, and does this undermine the metrics?
+
+\textbf{Answer.}  The coefficients are intentionally not fixed across all
+contexts.  They serve to modulate the relative importance of different
+factors, such as regenerations versus rollbacks, or structural
+boundaries versus modes.  The framework acknowledges the need for
+empirical calibration: as more data accumulates, projects can derive
+\emph{reference coefficients} suitable for common patterns.  Until
+then, the coefficients should be treated as tunable parameters rather
+than hidden constants.
+
+\subsection{Contamination by AI economics}
+\textbf{Question.}  Metrics such as Intent Conversion Cost or Functional
+Cost depend on external factors like language-model pricing, risking
+misleading signals.  How is this handled?
+
+\textbf{Answer.}  Economic observables must be versioned or indexed by
+the underlying inference pricing and architecture.  Comparing values
+across projects or over time requires normalizing to a common pricing
+baseline or reporting cost bands along with the raw figures.  The
+framework stresses that economic metrics are for diagnostic awareness,
+not for cross-project benchmarking, precisely because external market
+changes can dominate absolute values.
+
+\subsection{Linear defect tracebacks}
+\textbf{Question.}  Defects in complex systems often arise from
+distributed causes rather than a single “root” node on a linear path.
+Is the linear defect model too simplistic?
+
+\textbf{Answer.}  The linearization used in retrospective analyses
+serves as a pragmatic projection: it collapses a potentially
+multi-branched history into a sequence so that a “first moment” of
+invalidity can be identified.  This does not deny that causality may be
+distributed.  Rather, it isolates the earliest point at which an
+assumption or change allowed the later defect to emerge.  Future work
+could explore fully graph-based tracebacks, but the current linear model
+already improves over informal root-cause narratives by making
+assumptions explicit.
+
+\subsection{Non-normative metrics and Goodhart's law}
+\textbf{Question.}  If these metrics are exposed to management, won't
+teams start optimising for them, undermining their diagnostic value?
+
+\textbf{Answer.}  The framework is designed to measure latent
+properties—such as balance or premise support—rather than productivity.
+While any metric can be gamed if tied to incentives, the intended use is
+analytic rather than evaluative.  Teams can collect these signals
+without attaching targets, using them to understand and predict
+structural risks rather than to rank individuals.  This diagnostic
+orientation is emphasised repeatedly in the text.
+
+\subsection{Estimating expected implementation potential $I^\ast$}
+\textbf{Question.}  The pre-implementation balance replaces real code
+mass with an estimated potential ($I^\ast$), which may be unreliable.
+Does this undermine the pre-implementation metrics?
+
+\textbf{Answer.}  Estimation is indeed uncertain, and the framework does
+not deny this.  However, using structured proxies such as counts of
+boundaries, modes, dependencies, or exception cases provides a more
+disciplined approximation than unstructured guesswork.
+As with weighting coefficients, the estimation of $I^\ast$ should be
+empirically refined.  The pre-implementation metrics are most valuable
+for capturing relative change (growth of expected complexity against
+growth of intent), rather than for predicting absolute effort.
+
+\section{Threats to Validity (Additional Comments)}
+
+The critique presented earlier raises several methodological concerns
+about subjectivity, weight calibration, economic contamination,
+linear causal models, metric misuse, and estimation error.  Many of
+these issues are acknowledged in the original threats-to-validity
+section.  Rather than treating them as fatal flaws, we view them as
+points of caution and directions for future refinement.  The framework
+explicitly avoids normative interpretation of metric values and treats
+all quantities as diagnostic signals rather than targets.  It is the
+accumulation of data and the development of shared vocabularies and
+calibration procedures that will determine the practical utility of
+these observables.
+
+\end{document}
