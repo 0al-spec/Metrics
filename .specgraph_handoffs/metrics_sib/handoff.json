@@ -7,9 +7,19 @@
   "handoff_status": "ready_for_handoff",
   "review_state": "ready_for_review",
   "next_gap": "review_handoff_packet",
+  "source_context": {
+    "producer_repository": "https://github.com/0al-spec/SpecGraph",
+    "producer_ref": "main",
+    "producer_revision": "97ac2edb3b691628ec7b96ddd7c010e5fa1dd525",
+    "reference_scope": "SpecGraph producer repository and generated runtime artifacts; references are not relative to the Metrics checkout."
+  },
   "policy_reference": {
     "artifact_path": "tools/external_consumer_handoff_policy.json",
+    "artifact_path_scope": "producer_repository",
+    "artifact_url": "https://github.com/0al-spec/SpecGraph/blob/97ac2edb3b691628ec7b96ddd7c010e5fa1dd525/tools/external_consumer_handoff_policy.json",
     "artifact_sha256": "6510762d5bd0be0fa04d661b1bfc45e691bfc9662667e2f9d5d9b95551c9afdd",
+    "producer_repository": "https://github.com/0al-spec/SpecGraph",
+    "producer_revision": "97ac2edb3b691628ec7b96ddd7c010e5fa1dd525",
     "version": 1
   },
   "bound_metric_ids": [
@@ -69,25 +79,28 @@
   "target_consumer": {
     "consumer_id": "metrics_sib",
     "profile": "sibling_metric_consumer",
-    "repo_url": "https://github.com/0al-spec/Metrics",
-    "local_checkout_hint": "/Users/egor/Development/GitHub/0AL/Metrics"
+    "repo_url": "https://github.com/0al-spec/Metrics"
   },
   "transition_packet": {
     "packet_type": "handoff",
     "transition_profile": "implementation_trace",
     "transition_intent": "handoff bounded SpecGraph metric and bridge surfaces to external consumer Metrics / SIB",
     "source_refs": [
-      "tools/external_consumers.json",
-      "runs/external_consumer_index.json",
-      "runs/external_consumer_overlay.json",
-      "runs/metric_signal_index.json",
-      "runs/metric_threshold_proposals.json"
+      "https://github.com/0al-spec/SpecGraph/blob/97ac2edb3b691628ec7b96ddd7c010e5fa1dd525/tools/external_consumers.json",
+      "specgraph-runtime://runs/external_consumer_index.json?artifact_kind=external_consumer_index&generated_at=2026-05-01T21:25:44.441267%2B00:00&producer_revision=97ac2edb3b691628ec7b96ddd7c010e5fa1dd525",
+      "specgraph-runtime://runs/external_consumer_overlay.json?artifact_kind=external_consumer_overlay&generated_at=2026-05-01T21:25:48.232771%2B00:00&producer_revision=97ac2edb3b691628ec7b96ddd7c010e5fa1dd525",
+      "specgraph-runtime://runs/metric_signal_index.json?artifact_kind=metric_signal_index&generated_at=2026-05-01T21:25:48.230500%2B00:00&producer_revision=97ac2edb3b691628ec7b96ddd7c010e5fa1dd525",
+      "specgraph-runtime://runs/metric_threshold_proposals.json?artifact_kind=metric_threshold_proposals&generated_at=2026-05-01T21:25:48.233633%2B00:00&producer_revision=97ac2edb3b691628ec7b96ddd7c010e5fa1dd525"
     ],
+    "source_ref_resolution": {
+      "tracked_producer_files": "Use the explicit GitHub URL pinned to producer_revision.",
+      "producer_runtime_artifacts": "Use specgraph-runtime refs as generated SpecGraph artifact identifiers; these are not Metrics checkout paths."
+    },
     "actor_class": "supervisor_derived",
     "target_artifact_class": "external_consumer_handoff_packet",
     "lineage_root": "external-consumer::metrics_sib",
     "declared_change_surface": [
-      "runs/external_consumer_handoff_packets.json"
+      "specgraph-runtime://runs/external_consumer_handoff_packets.json?artifact_kind=external_consumer_handoff_packets&generated_at=2026-05-01T21:25:48.234535%2B00:00&producer_revision=97ac2edb3b691628ec7b96ddd7c010e5fa1dd525"
     ],
     "required_provenance_links": [
       "external_consumer_registry",
