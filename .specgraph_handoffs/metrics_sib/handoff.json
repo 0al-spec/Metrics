@@ -1,0 +1,134 @@
+{
+  "handoff_id": "external_consumer_handoff::metrics_sib",
+  "consumer_id": "metrics_sib",
+  "title": "Metrics / SIB",
+  "reference_state": "stable_reference",
+  "bridge_state": "stable_ready",
+  "handoff_status": "ready_for_handoff",
+  "review_state": "ready_for_review",
+  "next_gap": "review_handoff_packet",
+  "policy_reference": {
+    "artifact_path": "tools/external_consumer_handoff_policy.json",
+    "artifact_sha256": "6510762d5bd0be0fa04d661b1bfc45e691bfc9662667e2f9d5d9b95551c9afdd",
+    "version": 1
+  },
+  "bound_metric_ids": [
+    "sib"
+  ],
+  "legacy_bound_metric_ids": [
+    "sib_proxy"
+  ],
+  "bound_metrics": [
+    {
+      "metric_id": "sib",
+      "title": "Sibling Implementation Balance",
+      "score": 0.528,
+      "minimum_score": 0.6,
+      "threshold_gap": 0.072,
+      "status": "below_threshold",
+      "trigger_signal": "low_sib",
+      "signal_emitted": true,
+      "derivation_mode": "bridge_backed",
+      "metric_family": "sib",
+      "legacy_metric_ids": [
+        "sib_proxy"
+      ],
+      "threshold_authority_state": "canonical_threshold_authority",
+      "basis": "Bridge-backed bootstrap composite anchored by the stable external Metrics/SIB consumer when available.",
+      "input_summary": {
+        "component_scores": {
+          "specification_verifiability": 0.123,
+          "process_observability": 0.533,
+          "structural_observability": 0.979,
+          "external_consumer_alignment": 1.0
+        },
+        "component_weights": {
+          "specification_verifiability": 0.4,
+          "process_observability": 0.25,
+          "structural_observability": 0.2,
+          "external_consumer_alignment": 0.15
+        },
+        "stable_bridge_consumer_ids": [
+          "metrics_sib"
+        ],
+        "draft_bridge_consumer_ids": [
+          "metrics_sib_full"
+        ],
+        "bridge_ready_consumer_ids": [
+          "metrics_sib"
+        ],
+        "bridge_unverified_identity_consumer_ids": [],
+        "bridge_missing_checkout_ids": []
+      }
+    }
+  ],
+  "threshold_proposal_ids": [
+    "metric-sib-followup"
+  ],
+  "threshold_proposal_count": 1,
+  "target_consumer": {
+    "consumer_id": "metrics_sib",
+    "profile": "sibling_metric_consumer",
+    "repo_url": "https://github.com/0al-spec/Metrics",
+    "local_checkout_hint": "/Users/egor/Development/GitHub/0AL/Metrics"
+  },
+  "transition_packet": {
+    "packet_type": "handoff",
+    "transition_profile": "implementation_trace",
+    "transition_intent": "handoff bounded SpecGraph metric and bridge surfaces to external consumer Metrics / SIB",
+    "source_refs": [
+      "tools/external_consumers.json",
+      "runs/external_consumer_index.json",
+      "runs/external_consumer_overlay.json",
+      "runs/metric_signal_index.json",
+      "runs/metric_threshold_proposals.json"
+    ],
+    "actor_class": "supervisor_derived",
+    "target_artifact_class": "external_consumer_handoff_packet",
+    "lineage_root": "external-consumer::metrics_sib",
+    "declared_change_surface": [
+      "runs/external_consumer_handoff_packets.json"
+    ],
+    "required_provenance_links": [
+      "external_consumer_registry",
+      "metric_signal_index",
+      "metric_threshold_proposals"
+    ]
+  },
+  "transition_packet_validation": {
+    "ok": true,
+    "packet_type": "handoff",
+    "packet_family": "handoff",
+    "packet_family_definition": {
+      "description": "Emit a downstream handoff artifact once semantic saturation has been reached.",
+      "required_fields": [
+        "target_artifact_class"
+      ]
+    },
+    "transition_profile": "implementation_trace",
+    "validator_profile_definition": {
+      "description": "Transition profile for derived implementation-trace and runtime-evidence artifacts.",
+      "allowed_packet_types": [
+        "proposal",
+        "apply",
+        "handoff"
+      ]
+    },
+    "product_spec_policy_definition": {},
+    "proposal_promotion_policy_definition": {},
+    "families_checked": [
+      "schema",
+      "legality",
+      "provenance",
+      "boundedness",
+      "authority",
+      "reconciliation",
+      "diff_scope",
+      "profile"
+    ],
+    "finding_count": 0,
+    "findings_by_family": {},
+    "findings": []
+  },
+  "notes": "Stable sibling consumer contract used for the bridge-native SIB metric family while preserving sib_proxy as a compatibility alias."
+}
