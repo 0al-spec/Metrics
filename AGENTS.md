@@ -1,6 +1,17 @@
 # Metrics Agent Instructions
 
+## Scope
+
+This root-level guide applies to repository-wide agent behavior and local
+coordination for Metrics. For work under `SIB/`, use `SIB/AGENTS.md` for
+LaTeX, bibliography, and document-editing guidance; those narrower instructions
+take precedence for SIB paper files.
+
 ## 0AL Local Ops Logging
+
+`0AL` is the Zero-trust Agents Layer workspace. In this checkout, `../.0al` is
+the local operator tracker used to coordinate sibling repositories when that
+directory is present.
 
 For cross-repo observations, coordination tasks, blockers, or handoffs, write a
 local ops entry through the `.0al` logging CLI when it is available:
