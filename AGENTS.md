@@ -14,7 +14,7 @@ the local operator tracker used to coordinate sibling repositories when that
 directory is present.
 
 For cross-repo observations, coordination tasks, blockers, or handoffs, write a
-local ops entry through the `.0al` logging CLI when it is available:
+local ops entry through the sibling `../.0al` logging CLI when it is available:
 
 ```bash
 ../.0al/scripts/0al-log.py --project metrics --kind note --owner unclassified \
