@@ -24,6 +24,7 @@ Example report invariants can be checked without third-party dependencies:
 
 ```bash
 python3 scripts/validate_idea_maturity_examples.py
+python3 scripts/validate_idea_maturity_examples.py path/to/report.json
 ```
 
 ## Building

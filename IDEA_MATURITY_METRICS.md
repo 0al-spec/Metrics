@@ -542,7 +542,7 @@ JSON Schema validation alone is not enough for conformance because JSON Schema
 cannot express every cross-field numeric relationship. Conformance for this pack
 is schema validation plus a separate invariant/policy validator. This repository
 includes `scripts/validate_idea_maturity_examples.py` as a small executable
-reference for the example reports.
+reference for bundled examples and produced report artifacts.
 
 ## Policy Findings
 
