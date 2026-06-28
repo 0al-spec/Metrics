@@ -20,6 +20,11 @@ including clarification load, answer materialization, ontology grounding,
 candidate repair, temporal progress, workflow friction, approval readiness, and
 read-model publication state. Its initial machine-readable report contract lives
 in [schemas/idea_maturity_metrics_report.schema.json](schemas/idea_maturity_metrics_report.schema.json).
+Example report invariants can be checked without third-party dependencies:
+
+```bash
+python3 scripts/validate_idea_maturity_examples.py
+```
 
 ## Building
 

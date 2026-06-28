@@ -229,7 +229,7 @@ ontology frame or intentionally kept project-local.
 | `ontology_deferred_term_count` | Terms deferred for later owner review. |
 | `ontology_match_kind_counts` | Resolution counts by match kind. |
 
-Recommended `ontology_match_kind_counts` keys:
+Closed required `ontology_match_kind_counts` key set:
 
 - `exact`;
 - `normalized_exact`;
@@ -241,7 +241,8 @@ Recommended `ontology_match_kind_counts` keys:
 - `manual_alias`;
 - `project_local_term`;
 - `reject`;
-- `defer`.
+- `defer`;
+- `other`.
 
 The metric pack should preserve match provenance and confidence. A high
 resolution rate is useful only when match provenance remains conservative and
@@ -265,7 +266,7 @@ grounding.
 | `remaining_blocker_count` | Blocking issues still preventing approval readiness. |
 | `rerun_count` | Number of repair rerun attempts. |
 
-Recommended `candidate_resolution_kind_counts` keys are closed for comparison:
+Closed required `candidate_resolution_kind_counts` key set:
 
 - `risk_accepted`;
 - `enforcement_mechanism_added`;
@@ -310,8 +311,11 @@ snapshot.
 | `stalled_phase` | Phase currently considered stalled, or `null`. |
 
 Time values are diagnostic and depend on clock quality. Producers should include
-timestamp provenance when available and report `unknown` rather than inventing
-durations from incomplete timestamps.
+timestamp provenance when available and must not invent durations from
+incomplete timestamps. For `time_to_*_seconds`, `null` means the duration is not
+computable from available evidence. The reason must remain observable through
+adjacent lifecycle state, timeline evidence, or policy findings, such as
+`not_reached`, `unknown`, or `stale_ref_count`.
 
 ### 7. Promotion Readiness
 
@@ -344,6 +348,7 @@ Recommended state values:
 - `materialized`;
 - `dry_run`;
 - `executed`;
+- `failed`.
 
 ### 8. Review and Publication Completion
 
@@ -351,7 +356,7 @@ These metrics track the final review/read-model lifecycle.
 
 | Metric id | Meaning |
 | --- | --- |
-| `review_status` | `not_reached`, `open`, `merged`, `blocked`, or `unknown`. |
+| `review_status` | `not_reached`, `not_available`, `open`, `merged`, `blocked`, or `unknown`. |
 | `review_pr_number` | Pull request number, when available. |
 | `review_merge_commit_sha` | Merge commit SHA, when available. |
 | `read_model_publication_state` | Public-safe read-model publication state. |
@@ -360,6 +365,9 @@ These metrics track the final review/read-model lifecycle.
 
 Publishing is a public read-model event, not proof that ontology terms were
 accepted or that canonical specs were mutated outside review.
+
+`read_model_publication_state` should use `not_reached`, `not_available`,
+`unknown`, `blocked`, `published`, `dry_run`, or `failed`.
 
 ### 9. Economic Observability Bridge
 
@@ -420,9 +428,9 @@ metric ids, types, nullability rules, and source-of-truth boundaries.
 | `context_supplied_count` | integer | count | zero allowed | candidate gap resolutions | Count context-supplied resolutions. |
 | `remaining_blocker_count` | integer | count | zero allowed | repair session and gates | Count unresolved blocking findings. |
 | `rerun_count` | integer | count | zero allowed | rerun requests and execution reports | Count repair rerun attempts. |
-| `time_to_first_candidate_seconds` | number | seconds | null when not reached | timeline | Intake start to first candidate graph. |
-| `time_to_first_materialization_seconds` | number | seconds | null when not reached | timeline | Intake start to first materialized preview. |
-| `time_to_approval_ready_seconds` | number | seconds | null when not reached | timeline | Intake start to approval-ready repaired candidate. |
+| `time_to_first_candidate_seconds` | number | seconds | null when not reached or unknown | timeline | Intake start to first candidate graph. |
+| `time_to_first_materialization_seconds` | number | seconds | null when not reached or unknown | timeline | Intake start to first materialized preview. |
+| `time_to_approval_ready_seconds` | number | seconds | null when not reached or unknown | timeline | Intake start to approval-ready repaired candidate. |
 | `phase_dwell_seconds` | object | seconds map | empty map allowed | timeline | Dwell seconds by lifecycle phase. |
 | `no_progress_rerun_count` | integer | count | zero allowed | rerun reports | Reruns that did not reduce blockers or gaps. |
 | `last_progress_at` | string | RFC 3339 timestamp | null when unknown | timeline | Latest measurable progress event. |
@@ -505,6 +513,8 @@ the report as a trustworthy metric artifact:
 0 <= accepted_answer_count <= answered_question_count
 0 <= deferred_answer_count <= answered_question_count
 0 <= invalid_answer_count <= answered_question_count
+accepted_answer_count + invalid_answer_count + deferred_answer_count
+  <= answered_question_count
 
 0 <= materialized_answer_count <= accepted_answer_count
 0 <= unmaterialized_answer_count <= accepted_answer_count
@@ -527,6 +537,12 @@ affected derived state rather than silently normalizing the data.
 The `<=` gap accounting invariants allow explicitly excluded or deferred items.
 If an implementation uses closed partitions, it may strengthen those invariants
 to equality and report excluded/deferred counts separately.
+
+JSON Schema validation alone is not enough for conformance because JSON Schema
+cannot express every cross-field numeric relationship. Conformance for this pack
+is schema validation plus a separate invariant/policy validator. This repository
+includes `scripts/validate_idea_maturity_examples.py` as a small executable
+reference for the example reports.
 
 ## Policy Findings
 
@@ -601,6 +617,11 @@ report shape should minimize that risk.
 Reports must not include human operator identifiers. Consumers should aggregate
 friction by candidate, run, workspace class, or workflow class, not by person.
 
+This boundary is also a negative declaration, not data-loss prevention. Producers
+and consumers still need redaction, path review, secret scanning, and adapter
+tests because identities can leak through free-form ids, workspace routes, source
+artifact paths, or policy finding text.
+
 ## Run Artifact Sketch
 
 ```json
@@ -626,6 +647,8 @@ friction by candidate, run, workspace class, or workflow class, not by person.
     "candidate_gap_resolved_count": 4,
     "candidate_gap_unresolved_count": 0,
     "candidate_gap_closure_rate": 1.0,
+    "candidate_node_count": 8,
+    "promotion_path_count": 8,
     "manual_handoff_count": 0,
     "remaining_blocker_count": 0,
     "candidate_approval_state": "ready",
@@ -634,14 +657,24 @@ friction by candidate, run, workspace class, or workflow class, not by person.
     "platform_promotion_state": "not_reached",
     "promotion_request_state": "not_reached",
     "promotion_execution_state": "not_reached",
+    "review_status": "not_reached",
     "read_model_publication_state": "not_reached"
   },
   "groups": {
     "ontology_grounding": {
       "ontology_match_kind_counts": {
+        "exact": 0,
         "normalized_exact": 1,
         "safe_inflection": 1,
-        "project_local_term": 9
+        "safe_phrase_match": 0,
+        "target_ref": 0,
+        "aggregate_target": 0,
+        "manual_bind": 0,
+        "manual_alias": 0,
+        "project_local_term": 9,
+        "reject": 0,
+        "defer": 0,
+        "other": 0
       }
     },
     "candidate_repair": {
