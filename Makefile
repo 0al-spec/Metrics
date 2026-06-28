@@ -1,6 +1,7 @@
-.PHONY: all pdf clean distclean help
+.PHONY: all pdf validate validate-idea-maturity clean distclean help
 
 PDF_DIRS := SIB SIB_FULL SIB_ECONOMIC_OBSERVABILITY
+PYTHON ?= python3
 
 all: pdf
 
@@ -10,6 +11,11 @@ pdf:
 		echo "==> Building PDF in $$dir"; \
 		$(MAKE) -C $$dir build; \
 	done
+
+validate: validate-idea-maturity
+
+validate-idea-maturity:
+	@$(PYTHON) scripts/metrics.py validate idea-maturity
 
 clean:
 	@set -e; \
@@ -28,6 +34,7 @@ distclean:
 help:
 	@echo "Makefile targets:"
 	@echo "  make pdf       - Build all PDFs in the repository"
+	@echo "  make validate  - Validate machine-readable metric-pack examples"
 	@echo "  make clean     - Remove LaTeX build artifacts in all PDF directories"
 	@echo "  make distclean - Remove all generated artifacts, including PDFs"
 	@echo "  make help      - Show this help message"
