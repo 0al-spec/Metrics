@@ -1,17 +1,23 @@
-# Idea-to-Spec Maturity Metrics
+# Idea-to-Spec Lifecycle Telemetry
 
 `metric_pack_id`: `idea_to_spec_maturity`
 
 Authority state: `draft_reference`
 
-This pack defines diagnostic metrics for observing how a raw product idea
-becomes a review-ready specification candidate through an agent-assisted
+This pack defines diagnostic lifecycle telemetry for observing how a raw product
+idea becomes a review-ready specification candidate through an agent-assisted
 `product_idea_to_spec` workflow.
 
 The pack is intentionally not a single score. It records raw counts, rates,
 state transitions, and friction signals so downstream systems can inspect where
 an idea matured, where it stalled, and which handoffs still require manual
 operator action.
+
+The pack is 0AL-specific at the artifact binding layer. The reusable ideas are
+clarification load, answer materialization, blocker closure, dwell time, handoff
+friction, and review/publication evidence. The concrete bindings to SpecGraph,
+SpecSpace, Platform, and Ontology artifacts are not intended to be portable
+outside this workflow without an adapter profile.
 
 ## Scope
 
@@ -91,6 +97,40 @@ Consumers should reject or quarantine reports where any authority flag is
 missing, truthy, non-boolean, or claims write capability. A metrics report can
 say that a downstream handoff is ready; it must not perform that handoff.
 
+This boundary is a negative declaration, not a security enforcement mechanism.
+Consumers must not infer write authority from a metrics report. Real enforcement
+must come from runtime permissions, credentials, policy engines, signed producer
+identity, or external attestation.
+
+The closed required key set is:
+
+```text
+may_mutate_canonical_specs
+may_write_ontology_package
+may_accept_ontology_terms
+may_create_branch_or_commit
+may_open_pull_request
+may_merge_pull_request
+may_publish_read_model
+may_execute_prompt_agent
+```
+
+Reports may also carry external attestation references:
+
+```json
+{
+  "producer_attestation": {
+    "producer_id": "did:example:metrics-adapter",
+    "agent_passport_ref": "agent-passport://example/metrics-adapter",
+    "signature_ref": "cosign://example",
+    "runtime_enforcement_evidence_ref": "zeroald://run/example"
+  }
+}
+```
+
+Attestation references are evidence hooks. They do not turn the metrics report
+itself into an authority-bearing artifact.
+
 ## Required Input Families
 
 ### SpecGraph Inputs
@@ -122,6 +162,18 @@ say that a downstream handoff is ready; it must not perform that handoff.
 - product promotion execution report;
 - review status report;
 - read-model publication report.
+
+## Machine-Readable Artifacts
+
+This draft includes a schema-first anchor and examples:
+
+- `schemas/idea_maturity_metrics_report.schema.json`;
+- `examples/idea_maturity_metrics_report.happy.json`;
+- `examples/idea_maturity_metrics_report.blocked_stale_refs.json`.
+
+The blocked/stale example is intentionally more important than the happy path:
+it demonstrates stale refs, stalled repair dwell time, zero materialization, and
+policy findings without collapsing those observations into an invalid report.
 
 ## Metric Groups
 
@@ -206,11 +258,20 @@ grounding.
 | `candidate_gap_resolved_count` | Product/spec gaps removed in review-only materialization. |
 | `candidate_gap_unresolved_count` | Product/spec gaps still present after repair. |
 | `candidate_gap_closure_rate` | `candidate_gap_resolved_count / candidate_gap_count_initial`. |
+| `candidate_resolution_kind_counts` | Resolution counts by closed candidate gap resolution kind. |
 | `risk_accepted_count` | Risks explicitly accepted for candidate review. |
 | `enforcement_mechanism_added_count` | Enforcement-mechanism gaps closed by answers. |
 | `context_supplied_count` | Gaps closed by additional bounded-context information. |
 | `remaining_blocker_count` | Blocking issues still preventing approval readiness. |
 | `rerun_count` | Number of repair rerun attempts. |
+
+Recommended `candidate_resolution_kind_counts` keys are closed for comparison:
+
+- `risk_accepted`;
+- `enforcement_mechanism_added`;
+- `context_supplied`;
+- `gap_rejected`;
+- `other`.
 
 For reviewability, gap closure must preserve evidence such as `answer_id`,
 `target_ref`, node scope, and resolution kind.
@@ -233,27 +294,58 @@ handoffs or repeated recovery.
 These are product-ergonomics signals. High friction may be acceptable in early
 MVP/bootstrap mode but should trend down for product workspaces.
 
-### 6. Promotion Readiness
+### 6. Temporal Progress and Stalling
 
-These metrics describe lifecycle readiness without claiming that promotion has
-actually happened.
+These metrics make "stalled" observable rather than inferred from a static
+snapshot.
 
 | Metric id | Meaning |
 | --- | --- |
-| `ready_for_candidate_approval` | Candidate is ready for explicit approval intent. |
-| `candidate_approval_intent_present` | SpecSpace-owned approval intent exists. |
-| `candidate_approval_decision_present` | Platform materialized approval decision exists. |
-| `ready_for_platform_promotion` | Candidate has approval decision and promotion prerequisites. |
+| `time_to_first_candidate_seconds` | Seconds from intake start to first candidate graph. |
+| `time_to_first_materialization_seconds` | Seconds from intake start to first materialized preview. |
+| `time_to_approval_ready_seconds` | Seconds from intake start to approval-ready repaired candidate. |
+| `phase_dwell_seconds` | Map of lifecycle phase to dwell time in seconds. |
+| `no_progress_rerun_count` | Reruns that did not reduce blockers or gaps. |
+| `last_progress_at` | Timestamp of the latest measurable progress event. |
+| `stalled_phase` | Phase currently considered stalled, or `null`. |
+
+Time values are diagnostic and depend on clock quality. Producers should include
+timestamp provenance when available and report `unknown` rather than inventing
+durations from incomplete timestamps.
+
+### 7. Promotion Readiness
+
+These observations describe lifecycle readiness without claiming that promotion
+has actually happened. They are lifecycle states and evidence, not scalar
+quality scores.
+
+| Metric id | Meaning |
+| --- | --- |
+| `candidate_approval_state` | Candidate approval lifecycle state. |
+| `candidate_approval_intent_state` | SpecSpace-owned approval intent state. |
+| `candidate_approval_decision_state` | Platform approval decision state. |
+| `platform_promotion_state` | Platform promotion readiness state. |
 | `promotion_path_count` | Materialized candidate paths approved for review. |
-| `promotion_request_present` | Promotion request handoff artifact exists. |
-| `promotion_execution_present` | Controlled promotion execution report exists. |
-| `git_review_opened` | Review PR was opened or dry-run report says it would be opened. |
+| `promotion_request_state` | Promotion request handoff state. |
+| `promotion_execution_state` | Controlled promotion execution state. |
 
-`ready_for_candidate_approval` and `ready_for_platform_promotion` must remain
-separate. The former is product/spec readiness; the latter requires an explicit
-approval decision and promotion handoff.
+`candidate_approval_state` and `platform_promotion_state` must remain separate.
+The former is product/spec readiness; the latter requires an explicit approval
+decision and promotion handoff.
 
-### 7. Review and Publication Completion
+Recommended state values:
+
+- `not_reached`;
+- `not_available`;
+- `unknown`;
+- `blocked`;
+- `ready`;
+- `requested`;
+- `materialized`;
+- `dry_run`;
+- `executed`;
+
+### 8. Review and Publication Completion
 
 These metrics track the final review/read-model lifecycle.
 
@@ -261,13 +353,34 @@ These metrics track the final review/read-model lifecycle.
 | --- | --- |
 | `review_status` | `not_reached`, `open`, `merged`, `blocked`, or `unknown`. |
 | `review_pr_number` | Pull request number, when available. |
-| `review_merge_commit_present` | Whether merge commit evidence is available. |
-| `read_model_published` | Public-safe read model publication completed. |
+| `review_merge_commit_sha` | Merge commit SHA, when available. |
+| `read_model_publication_state` | Public-safe read-model publication state. |
 | `published_file_count` | Number of public-safe files in the published bundle. |
-| `published_manifest_digest_present` | Whether manifest/checksum evidence exists. |
+| `published_manifest_digest` | Manifest/checksum digest, when available. |
 
 Publishing is a public read-model event, not proof that ontology terms were
 accepted or that canonical specs were mutated outside review.
+
+### 9. Economic Observability Bridge
+
+This pack does not define cost formulas. It may link to the
+`sib_economic_observability` pack when token footprint, tool footprint, pricing
+surface, or observed spend exists.
+
+Recommended bridge fields:
+
+```json
+{
+  "economic_observability_ref": {
+    "metric_pack_id": "sib_economic_observability",
+    "run_cost_report_ref": "runs/idea_to_spec_cost_report.json",
+    "token_footprint_available": true,
+    "tool_footprint_available": true
+  }
+}
+```
+
+When absent, cost signals should be reported as `not_available`, not guessed.
 
 ## Metric Contract
 
@@ -301,11 +414,19 @@ metric ids, types, nullability rules, and source-of-truth boundaries.
 | `candidate_gap_resolved_count` | integer | count | zero allowed | rerun materialization | Count candidate gaps removed in preview. |
 | `candidate_gap_unresolved_count` | integer | count | zero allowed | rerun materialization | Count candidate gaps still present after repair. |
 | `candidate_gap_closure_rate` | number | ratio 0..1 | null when denominator is zero | rerun materialization | `candidate_gap_resolved_count / candidate_gap_count_initial`. |
+| `candidate_resolution_kind_counts` | object | closed count map | all known keys present | candidate gap resolutions | Group candidate gap resolutions by closed resolution kind. |
 | `risk_accepted_count` | integer | count | zero allowed | candidate gap resolutions | Count risk-accepted resolutions. |
 | `enforcement_mechanism_added_count` | integer | count | zero allowed | candidate gap resolutions | Count enforcement-mechanism resolutions. |
 | `context_supplied_count` | integer | count | zero allowed | candidate gap resolutions | Count context-supplied resolutions. |
 | `remaining_blocker_count` | integer | count | zero allowed | repair session and gates | Count unresolved blocking findings. |
 | `rerun_count` | integer | count | zero allowed | rerun requests and execution reports | Count repair rerun attempts. |
+| `time_to_first_candidate_seconds` | number | seconds | null when not reached | timeline | Intake start to first candidate graph. |
+| `time_to_first_materialization_seconds` | number | seconds | null when not reached | timeline | Intake start to first materialized preview. |
+| `time_to_approval_ready_seconds` | number | seconds | null when not reached | timeline | Intake start to approval-ready repaired candidate. |
+| `phase_dwell_seconds` | object | seconds map | empty map allowed | timeline | Dwell seconds by lifecycle phase. |
+| `no_progress_rerun_count` | integer | count | zero allowed | rerun reports | Reruns that did not reduce blockers or gaps. |
+| `last_progress_at` | string | RFC 3339 timestamp | null when unknown | timeline | Latest measurable progress event. |
+| `stalled_phase` | string | lifecycle phase id | null when none/unknown | timeline | Current stalled phase. |
 | `manual_handoff_count` | integer | count | zero allowed | Platform and operator handoff reports | Count explicit operator handoffs. |
 | `operator_command_count` | integer | count | zero allowed | Platform execution reports | Count operator-run commands needed to advance. |
 | `failed_gate_count` | integer | count | zero allowed | Platform and SpecGraph gate reports | Count gate failures or blocked gate reports. |
@@ -313,20 +434,20 @@ metric ids, types, nullability rules, and source-of-truth boundaries.
 | `dry_run_count` | integer | count | zero allowed | Platform execution reports | Count dry-run phases. |
 | `rerun_request_count` | integer | count | zero allowed | SpecSpace rerun request state | Count rerun requests. |
 | `approval_attempt_count` | integer | count | zero allowed | approval intent and gate reports | Count approval attempts. |
-| `ready_for_candidate_approval` | boolean | flag | false when unavailable | repair session and repaired handoff | True only when candidate approval gate prerequisites are met. |
-| `candidate_approval_intent_present` | boolean | flag | false when unavailable | SpecSpace approval intent state | True when approval intent exists for the active session. |
-| `candidate_approval_decision_present` | boolean | flag | false when unavailable | Platform approval execution report | True when `candidate_approval_decision` exists. |
-| `ready_for_platform_promotion` | boolean | flag | false when unavailable | Platform approval/promotion reports | True only after approval decision and promotion prerequisites exist. |
+| `candidate_approval_state` | enum | state | `not_reached` allowed | repair session and repaired handoff | Approval readiness lifecycle state. |
+| `candidate_approval_intent_state` | enum | state | `not_reached` allowed | SpecSpace approval intent state | Approval intent lifecycle state. |
+| `candidate_approval_decision_state` | enum | state | `not_reached` allowed | Platform approval execution report | Approval decision lifecycle state. |
+| `platform_promotion_state` | enum | state | `not_reached` allowed | Platform approval/promotion reports | Platform promotion lifecycle state. |
 | `promotion_path_count` | integer | count | zero allowed | promotion gate and approval decision | Count approved materialized paths. |
-| `promotion_request_present` | boolean | flag | false when unavailable | promotion request report | True when promotion request handoff exists. |
-| `promotion_execution_present` | boolean | flag | false when unavailable | promotion execution report | True when controlled promotion execution report exists. |
-| `git_review_opened` | boolean | flag | false when unavailable | promotion execution or review report | True when review PR opened, or dry-run says it would open. |
+| `promotion_request_state` | enum | state | `not_reached` allowed | promotion request report | Promotion request handoff state. |
+| `promotion_execution_state` | enum | state | `not_reached` allowed | promotion execution report | Controlled promotion execution state. |
 | `review_status` | enum | state | `not_reached` allowed | review status report | One of `not_reached`, `open`, `merged`, `blocked`, `unknown`. |
 | `review_pr_number` | integer | identifier | null when absent | review status report | Pull request number. |
-| `review_merge_commit_present` | boolean | flag | false when unavailable | review status report | True when merge commit evidence exists. |
-| `read_model_published` | boolean | flag | false when unavailable | read-model publication report | True when public-safe publication completed. |
+| `review_merge_commit_sha` | string | SHA | null when absent | review status report | Merge commit SHA. |
+| `read_model_publication_state` | enum | state | `not_reached` allowed | read-model publication report | Public read-model publication state. |
 | `published_file_count` | integer | count | zero allowed | publication report and manifest | Count public-safe files. |
-| `published_manifest_digest_present` | boolean | flag | false when unavailable | publication report and checksums | True when manifest/checksum digest evidence exists. |
+| `published_manifest_digest` | string | digest | null when absent | publication report and checksums | Public artifact manifest/checksum digest. |
+| `candidate_node_count` | integer | count | zero allowed | candidate graph | Count material candidate graph nodes. |
 
 ## Derived Lifecycle States
 
@@ -341,8 +462,8 @@ Implementations may derive a coarse state for dashboards:
 | `approval_ready` | Candidate can receive explicit approval intent. |
 | `approval_materialized` | Platform produced `candidate_approval_decision`. |
 | `promotion_requested` | Promotion request handoff exists. |
-| `git_review_opened` | Controlled Git review opened or dry-run equivalent exists. |
-| `read_model_published` | Public-safe read model publication completed. |
+| `git_review_active` | Controlled Git review opened or dry-run equivalent exists. |
+| `read_model_publication_complete` | Public-safe read model publication completed. |
 | `blocked` | A gate prevents forward progress. |
 
 The derived state is a navigation aid. It must not hide raw blockers, counts, or
@@ -369,6 +490,10 @@ promotion_path_density =
 `promotion_path_density` is diagnostic only. A higher value does not imply a
 better candidate; it may indicate over-materialization.
 
+`candidate_node_count` counts material candidate graph nodes in the active
+candidate graph or repaired candidate preview. It excludes metadata-only wrapper
+objects, summaries, and platform reports.
+
 ## Consistency Invariants
 
 Implementations should validate these invariants before publishing or displaying
@@ -394,20 +519,87 @@ ontology_gap_resolved_count + ontology_gap_unresolved_count
 0 <= candidate_gap_unresolved_count <= candidate_gap_count_initial
 candidate_gap_resolved_count + candidate_gap_unresolved_count
   <= candidate_gap_count_initial
-
-ready_for_platform_promotion == true
-  requires candidate_approval_decision_present == true
-  and promotion_request_present == true
-
-read_model_published == true
-  requires review_status == merged
-
-git_review_opened == true
-  requires promotion_execution_present == true
 ```
 
 When an invariant fails, consumers should report `blocked` or `unknown` for the
 affected derived state rather than silently normalizing the data.
+
+The `<=` gap accounting invariants allow explicitly excluded or deferred items.
+If an implementation uses closed partitions, it may strengthen those invariants
+to equality and report excluded/deferred counts separately.
+
+## Policy Findings
+
+Policy findings are not data invariants. The telemetry report should preserve
+observed reality even when the workflow happened out of order. Consumers can
+then flag policy violations without discarding the observation.
+
+Examples:
+
+```json
+{
+  "policy_findings": [
+    {
+      "kind": "out_of_order_publication",
+      "severity": "high",
+      "observed": {
+        "read_model_publication_state": "published",
+        "review_status": "not_reached"
+      }
+    },
+    {
+      "kind": "stale_answer_refs",
+      "severity": "medium",
+      "observed": {
+        "stale_ref_count": 4,
+        "accepted_answer_count": 6
+      }
+    }
+  ]
+}
+```
+
+Recommended policy checks:
+
+- `read_model_publication_state: published` while `review_status` is not
+  `merged`;
+- `promotion_request_state: requested` while `candidate_approval_decision_state`
+  is not `materialized`;
+- `git_review_state` or `promotion_execution_state` indicates execution before
+  promotion request evidence exists;
+- `stale_ref_count > 0` after accepted answers were submitted.
+
+## Diagnostic Playbook
+
+The pack avoids universal thresholds, but recurring signals should still guide
+operator action.
+
+| Signal | Interpretation | Suggested action |
+| --- | --- | --- |
+| `accepted_answer_count > 0` and `materialized_answer_count == 0` | Answers are collected but not changing candidate state. | Inspect rerun materialization, preview diff, and stale refs before approval. |
+| `stale_ref_count > 0` | Drafts or answers target obsolete refs. | Ask the operator to rebase answers against the active candidate graph. |
+| `manual_handoff_count` rises across runs | Product workflow still depends on operator glue. | Prioritize automation or make the ownership boundary explicit. |
+| High `phase_dwell_seconds.repair_required` | Candidate may be stalled in repair. | Escalate to operator review or emit a blocked state with reason. |
+| `ontology_gap_resolution_rate` is low | Terms are not grounded in the active ontology frame. | Review bind/alias/project-local term decisions. |
+| `candidate_gap_closure_rate` is low | Product/spec answers are not closing blockers. | Inspect candidate gap targets and materialization evidence. |
+
+## Privacy and Anti-Goodhart Constraints
+
+Workflow friction metrics can become harmful if joined to human identities. The
+report shape should minimize that risk.
+
+```json
+{
+  "privacy_boundary": {
+    "contains_human_operator_identity": false,
+    "join_to_identity_allowed": false,
+    "minimum_aggregation_subject": "candidate_run"
+  }
+}
+```
+
+Reports must not include human operator identifiers. Consumers should aggregate
+friction by candidate, run, workspace class, or workflow class, not by person.
 
 ## Run Artifact Sketch
 
@@ -436,21 +628,29 @@ affected derived state rather than silently normalizing the data.
     "candidate_gap_closure_rate": 1.0,
     "manual_handoff_count": 0,
     "remaining_blocker_count": 0,
-    "ready_for_candidate_approval": true,
-    "ready_for_platform_promotion": false
+    "candidate_approval_state": "ready",
+    "candidate_approval_intent_state": "not_reached",
+    "candidate_approval_decision_state": "not_reached",
+    "platform_promotion_state": "not_reached",
+    "promotion_request_state": "not_reached",
+    "promotion_execution_state": "not_reached",
+    "read_model_publication_state": "not_reached"
   },
   "groups": {
     "ontology_grounding": {
-      "match_kind_counts": {
+      "ontology_match_kind_counts": {
         "normalized_exact": 1,
         "safe_inflection": 1,
         "project_local_term": 9
       }
     },
     "candidate_repair": {
-      "resolution_kind_counts": {
+      "candidate_resolution_kind_counts": {
         "risk_accepted": 1,
-        "enforcement_mechanism_added": 3
+        "enforcement_mechanism_added": 3,
+        "context_supplied": 0,
+        "gap_rejected": 0,
+        "other": 0
       }
     },
     "workflow_friction": {
@@ -469,7 +669,14 @@ affected derived state rather than silently normalizing the data.
     "may_accept_ontology_terms": false,
     "may_create_branch_or_commit": false,
     "may_open_pull_request": false,
+    "may_merge_pull_request": false,
+    "may_execute_prompt_agent": false,
     "may_publish_read_model": false
+  },
+  "privacy_boundary": {
+    "contains_human_operator_identity": false,
+    "join_to_identity_allowed": false,
+    "minimum_aggregation_subject": "candidate_run"
   }
 }
 ```
