@@ -25,7 +25,14 @@ Example report invariants can be checked without third-party dependencies:
 ```bash
 python3 scripts/validate_idea_maturity_examples.py
 python3 scripts/validate_idea_maturity_examples.py path/to/report.json
+python3 scripts/metrics.py validate idea-maturity path/to/report.json \
+  --output runs/idea_maturity_metrics_validation_report.json
 ```
+
+`scripts/metrics.py` is the stable CLI entrypoint for sibling repositories. It
+keeps Metrics as the source of truth for metric-pack validation while allowing
+producers such as SpecGraph to emit structured validation reports without
+copying validator logic.
 
 ## Building
 

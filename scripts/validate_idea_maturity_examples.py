@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -27,8 +28,12 @@ EXAMPLES = (
 X_EXTENSION_PREFIX = "x-"
 
 
+class ValidationError(Exception):
+    """Raised when an idea maturity report violates the contract."""
+
+
 def _fail(path: Path, message: str) -> None:
-    raise SystemExit(f"{path}: {message}")
+    raise ValidationError(f"{path}: {message}")
 
 
 def _object(path: Path, value: Any, name: str) -> dict[str, Any]:
@@ -345,7 +350,11 @@ def main() -> int:
     contract = Contract(json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
     for path in _paths_from_args():
         resolved = path if path.is_absolute() else Path.cwd() / path
-        validate(resolved, contract)
+        try:
+            validate(resolved, contract)
+        except ValidationError as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
         try:
             label = resolved.relative_to(ROOT)
         except ValueError:
