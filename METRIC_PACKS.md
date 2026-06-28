@@ -29,6 +29,7 @@ paths are descriptive metadata and should not be used as stable identifiers.
 | `sib` | SIB | `SIB/metrics.tex` |
 | `sib_full` | SIB Full Metrics | `SIB_FULL/sib_full_metrics.tex` |
 | `sib_economic_observability` | SIB Economic Observability | `SIB_ECONOMIC_OBSERVABILITY/sib_economic_observability.tex` |
+| `idea_to_spec_maturity` | Idea-to-Spec Lifecycle Telemetry | `IDEA_MATURITY_METRICS.md` |
 
 ## Pack Layers
 
@@ -176,3 +177,7 @@ linear and multi-root graph interpretations.
   process, structural, and retrospective defect metrics.
 - `sib_economic_observability`: economic lens over pricing surfaces, inference
   footprint, verification cost, build cost, and structural cost proxies.
+- `idea_to_spec_maturity`: 0AL-specific product idea-to-spec lifecycle telemetry
+  over clarification load, answer materialization, ontology grounding, candidate
+  repair, temporal progress, workflow friction, promotion readiness, and
+  publication completion.

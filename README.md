@@ -14,6 +14,19 @@ See [METRIC_PACKS.md](METRIC_PACKS.md) for the plugin-style metric pack model,
 authority states, run artifact sketches, and interpretation guardrails used when
 SpecGraph consumes these metrics as read-only diagnostic overlays.
 
+The draft [Idea-to-Spec Lifecycle Telemetry](IDEA_MATURITY_METRICS.md) pack
+defines objective observability signals for product idea-to-spec workflows,
+including clarification load, answer materialization, ontology grounding,
+candidate repair, temporal progress, workflow friction, approval readiness, and
+read-model publication state. Its initial machine-readable report contract lives
+in [schemas/idea_maturity_metrics_report.schema.json](schemas/idea_maturity_metrics_report.schema.json).
+Example report invariants can be checked without third-party dependencies:
+
+```bash
+python3 scripts/validate_idea_maturity_examples.py
+python3 scripts/validate_idea_maturity_examples.py path/to/report.json
+```
+
 ## Building
 
 Each paper is in its own directory with a Makefile:

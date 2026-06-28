@@ -1,0 +1,573 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://0al-spec.github.io/Metrics/schemas/idea_maturity_metrics_report.schema.json",
+  "title": "Idea-to-Spec Lifecycle Telemetry Report",
+  "type": "object",
+  "required": [
+    "artifact_kind",
+    "metric_pack_id",
+    "authority_state",
+    "candidate",
+    "summary",
+    "authority_boundary",
+    "privacy_boundary",
+    "source_artifacts"
+  ],
+  "properties": {
+    "artifact_kind": {
+      "const": "idea_maturity_metrics_report"
+    },
+    "metric_pack_id": {
+      "const": "idea_to_spec_maturity"
+    },
+    "authority_state": {
+      "const": "draft_reference"
+    },
+    "candidate": {
+      "type": "object",
+      "required": [
+        "candidate_id",
+        "workspace_route"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspace_route": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "lifecycle_state",
+        "clarification_question_count",
+        "accepted_answer_count",
+        "materialized_answer_count",
+        "ontology_gap_count_initial",
+        "ontology_gap_resolved_count",
+        "ontology_gap_unresolved_count",
+        "candidate_gap_count_initial",
+        "candidate_gap_resolved_count",
+        "candidate_gap_unresolved_count",
+        "remaining_blocker_count",
+        "candidate_approval_state",
+        "platform_promotion_state",
+        "review_status",
+        "read_model_publication_state"
+      ],
+      "properties": {
+        "lifecycle_state": {
+          "$ref": "#/$defs/lifecycle_state"
+        },
+        "clarification_question_count": {
+          "$ref": "#/$defs/count"
+        },
+        "blocking_question_count": {
+          "$ref": "#/$defs/count"
+        },
+        "review_required_question_count": {
+          "$ref": "#/$defs/count"
+        },
+        "answered_question_count": {
+          "$ref": "#/$defs/count"
+        },
+        "accepted_answer_count": {
+          "$ref": "#/$defs/count"
+        },
+        "deferred_answer_count": {
+          "$ref": "#/$defs/count"
+        },
+        "invalid_answer_count": {
+          "$ref": "#/$defs/count"
+        },
+        "materialized_answer_count": {
+          "$ref": "#/$defs/count"
+        },
+        "unmaterialized_answer_count": {
+          "$ref": "#/$defs/count"
+        },
+        "answer_materialization_rate": {
+          "$ref": "#/$defs/nullable_ratio"
+        },
+        "ontology_gap_count_initial": {
+          "$ref": "#/$defs/count"
+        },
+        "ontology_gap_resolved_count": {
+          "$ref": "#/$defs/count"
+        },
+        "ontology_gap_unresolved_count": {
+          "$ref": "#/$defs/count"
+        },
+        "ontology_gap_resolution_rate": {
+          "$ref": "#/$defs/nullable_ratio"
+        },
+        "candidate_gap_count_initial": {
+          "$ref": "#/$defs/count"
+        },
+        "candidate_gap_resolved_count": {
+          "$ref": "#/$defs/count"
+        },
+        "candidate_gap_unresolved_count": {
+          "$ref": "#/$defs/count"
+        },
+        "candidate_gap_closure_rate": {
+          "$ref": "#/$defs/nullable_ratio"
+        },
+        "candidate_node_count": {
+          "$ref": "#/$defs/count"
+        },
+        "promotion_path_count": {
+          "$ref": "#/$defs/count"
+        },
+        "remaining_blocker_count": {
+          "$ref": "#/$defs/count"
+        },
+        "manual_handoff_count": {
+          "$ref": "#/$defs/count"
+        },
+        "operator_command_count": {
+          "$ref": "#/$defs/count"
+        },
+        "failed_gate_count": {
+          "$ref": "#/$defs/count"
+        },
+        "stale_ref_count": {
+          "$ref": "#/$defs/count"
+        },
+        "dry_run_count": {
+          "$ref": "#/$defs/count"
+        },
+        "rerun_count": {
+          "$ref": "#/$defs/count"
+        },
+        "rerun_request_count": {
+          "$ref": "#/$defs/count"
+        },
+        "approval_attempt_count": {
+          "$ref": "#/$defs/count"
+        },
+        "time_to_first_candidate_seconds": {
+          "$ref": "#/$defs/nullable_seconds"
+        },
+        "time_to_first_materialization_seconds": {
+          "$ref": "#/$defs/nullable_seconds"
+        },
+        "time_to_approval_ready_seconds": {
+          "$ref": "#/$defs/nullable_seconds"
+        },
+        "last_progress_at": {
+          "$ref": "#/$defs/nullable_timestamp"
+        },
+        "stalled_phase": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "candidate_approval_state": {
+          "$ref": "#/$defs/workflow_state"
+        },
+        "candidate_approval_intent_state": {
+          "$ref": "#/$defs/workflow_state"
+        },
+        "candidate_approval_decision_state": {
+          "$ref": "#/$defs/workflow_state"
+        },
+        "platform_promotion_state": {
+          "$ref": "#/$defs/workflow_state"
+        },
+        "promotion_request_state": {
+          "$ref": "#/$defs/workflow_state"
+        },
+        "promotion_execution_state": {
+          "$ref": "#/$defs/workflow_state"
+        },
+        "review_status": {
+          "enum": [
+            "not_reached",
+            "not_available",
+            "unknown",
+            "open",
+            "merged",
+            "blocked"
+          ]
+        },
+        "review_pr_number": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "review_merge_commit_sha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "read_model_publication_state": {
+          "enum": [
+            "not_reached",
+            "not_available",
+            "unknown",
+            "blocked",
+            "published",
+            "dry_run",
+            "failed"
+          ]
+        },
+        "published_file_count": {
+          "$ref": "#/$defs/count"
+        },
+        "published_manifest_digest": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "patternProperties": {
+        "^x-[A-Za-z0-9_.-]+$": true
+      },
+      "additionalProperties": false
+    },
+    "groups": {
+      "type": "object",
+      "properties": {
+        "ontology_grounding": {
+          "type": "object",
+          "properties": {
+            "ontology_match_kind_counts": {
+              "$ref": "#/$defs/ontology_match_kind_counts"
+            }
+          },
+          "additionalProperties": true
+        },
+        "candidate_repair": {
+          "type": "object",
+          "properties": {
+            "candidate_resolution_kind_counts": {
+              "$ref": "#/$defs/candidate_resolution_kind_counts"
+            }
+          },
+          "additionalProperties": true
+        },
+        "workflow_friction": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "temporal_progress": {
+          "type": "object",
+          "properties": {
+            "phase_dwell_seconds": {
+              "$ref": "#/$defs/phase_dwell_seconds"
+            },
+            "no_progress_rerun_count": {
+              "$ref": "#/$defs/count"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "timeline": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "policy_findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/policy_finding"
+      }
+    },
+    "economic_observability_ref": {
+      "type": "object",
+      "required": [
+        "metric_pack_id"
+      ],
+      "properties": {
+        "metric_pack_id": {
+          "const": "sib_economic_observability"
+        },
+        "run_cost_report_ref": {
+          "type": "string"
+        },
+        "token_footprint_available": {
+          "type": "boolean"
+        },
+        "tool_footprint_available": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "producer_attestation": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "source_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authority_boundary": {
+      "$ref": "#/$defs/authority_boundary"
+    },
+    "privacy_boundary": {
+      "$ref": "#/$defs/privacy_boundary"
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nullable_ratio": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "nullable_seconds": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "nullable_timestamp": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "workflow_state": {
+      "enum": [
+        "not_reached",
+        "not_available",
+        "unknown",
+        "blocked",
+        "ready",
+        "requested",
+        "materialized",
+        "dry_run",
+        "executed",
+        "failed"
+      ]
+    },
+    "lifecycle_state": {
+      "enum": [
+        "intake_ready",
+        "repair_required",
+        "repair_rerun_requested",
+        "repaired_candidate_ready",
+        "approval_ready",
+        "approval_materialized",
+        "promotion_requested",
+        "git_review_active",
+        "read_model_publication_complete",
+        "blocked"
+      ]
+    },
+    "ontology_match_kind_counts": {
+      "type": "object",
+      "required": [
+        "exact",
+        "normalized_exact",
+        "safe_inflection",
+        "safe_phrase_match",
+        "target_ref",
+        "aggregate_target",
+        "manual_bind",
+        "manual_alias",
+        "project_local_term",
+        "reject",
+        "defer",
+        "other"
+      ],
+      "properties": {
+        "exact": {
+          "$ref": "#/$defs/count"
+        },
+        "normalized_exact": {
+          "$ref": "#/$defs/count"
+        },
+        "safe_inflection": {
+          "$ref": "#/$defs/count"
+        },
+        "safe_phrase_match": {
+          "$ref": "#/$defs/count"
+        },
+        "target_ref": {
+          "$ref": "#/$defs/count"
+        },
+        "aggregate_target": {
+          "$ref": "#/$defs/count"
+        },
+        "manual_bind": {
+          "$ref": "#/$defs/count"
+        },
+        "manual_alias": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_term": {
+          "$ref": "#/$defs/count"
+        },
+        "reject": {
+          "$ref": "#/$defs/count"
+        },
+        "defer": {
+          "$ref": "#/$defs/count"
+        },
+        "other": {
+          "$ref": "#/$defs/count"
+        }
+      },
+      "patternProperties": {
+        "^x-[A-Za-z0-9_.-]+$": {
+          "$ref": "#/$defs/count"
+        }
+      },
+      "additionalProperties": false
+    },
+    "candidate_resolution_kind_counts": {
+      "type": "object",
+      "required": [
+        "risk_accepted",
+        "enforcement_mechanism_added",
+        "context_supplied",
+        "gap_rejected",
+        "other"
+      ],
+      "properties": {
+        "risk_accepted": {
+          "$ref": "#/$defs/count"
+        },
+        "enforcement_mechanism_added": {
+          "$ref": "#/$defs/count"
+        },
+        "context_supplied": {
+          "$ref": "#/$defs/count"
+        },
+        "gap_rejected": {
+          "$ref": "#/$defs/count"
+        },
+        "other": {
+          "$ref": "#/$defs/count"
+        }
+      },
+      "patternProperties": {
+        "^x-[A-Za-z0-9_.-]+$": {
+          "$ref": "#/$defs/count"
+        }
+      },
+      "additionalProperties": false
+    },
+    "phase_dwell_seconds": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/nullable_seconds"
+      }
+    },
+    "authority_boundary": {
+      "type": "object",
+      "required": [
+        "may_mutate_canonical_specs",
+        "may_write_ontology_package",
+        "may_accept_ontology_terms",
+        "may_create_branch_or_commit",
+        "may_open_pull_request",
+        "may_merge_pull_request",
+        "may_publish_read_model",
+        "may_execute_prompt_agent"
+      ],
+      "properties": {
+        "may_mutate_canonical_specs": {
+          "const": false
+        },
+        "may_write_ontology_package": {
+          "const": false
+        },
+        "may_accept_ontology_terms": {
+          "const": false
+        },
+        "may_create_branch_or_commit": {
+          "const": false
+        },
+        "may_open_pull_request": {
+          "const": false
+        },
+        "may_merge_pull_request": {
+          "const": false
+        },
+        "may_publish_read_model": {
+          "const": false
+        },
+        "may_execute_prompt_agent": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "privacy_boundary": {
+      "type": "object",
+      "required": [
+        "contains_human_operator_identity",
+        "join_to_identity_allowed",
+        "minimum_aggregation_subject"
+      ],
+      "properties": {
+        "contains_human_operator_identity": {
+          "const": false
+        },
+        "join_to_identity_allowed": {
+          "const": false
+        },
+        "minimum_aggregation_subject": {
+          "enum": [
+            "candidate_run",
+            "workspace_run",
+            "workflow_class"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "policy_finding": {
+      "type": "object",
+      "required": [
+        "kind",
+        "severity"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "observed": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
