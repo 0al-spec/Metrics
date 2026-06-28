@@ -14,6 +14,11 @@ See [METRIC_PACKS.md](METRIC_PACKS.md) for the plugin-style metric pack model,
 authority states, run artifact sketches, and interpretation guardrails used when
 SpecGraph consumes these metrics as read-only diagnostic overlays.
 
+The draft [Idea-to-Spec Maturity Metrics](IDEA_MATURITY_METRICS.md) pack defines
+objective observability signals for product idea-to-spec workflows, including
+clarification load, answer materialization, ontology grounding, candidate repair,
+workflow friction, approval readiness, and read-model publication state.
+
 ## Building
 
 Each paper is in its own directory with a Makefile:
