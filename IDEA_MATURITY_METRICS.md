@@ -37,6 +37,25 @@ raw product idea
 The pack can be computed partially. Missing downstream stages should produce
 `not_available` or `not_reached` states rather than forcing a failure.
 
+## State Semantics
+
+Dashboards and adapters must not collapse all non-ready states into one bucket.
+The following states have distinct meanings:
+
+| State | Meaning |
+| --- | --- |
+| `not_reached` | The upstream lifecycle has not reached this phase yet. |
+| `not_available` | The required artifact family is absent or not integrated. |
+| `unknown` | The artifact exists, but the value cannot be determined safely. |
+| `blocked` | An explicit gate or validation finding prevented forward progress. |
+| `ready` | The phase has enough validated evidence for its next handoff. |
+| `failed` | Execution or validation attempted the phase and failed. |
+| `dry_run` | A phase produced a non-mutating dry-run report instead of real execution. |
+
+For example, `review_status: not_reached` means no review should exist yet,
+while `review_status: unknown` means the review surface exists but the adapter
+cannot determine its state. Those conditions require different operator action.
+
 ## Non-Goals
 
 - Do not rank people, teams, or organizations.
@@ -45,6 +64,32 @@ The pack can be computed partially. Missing downstream stages should produce
 - Do not auto-approve candidates or trigger Git promotion.
 - Do not accept ontology terms or write ontology packages.
 - Do not mutate canonical specs.
+
+## Authority Boundary
+
+The metric pack is an observability layer. Metrics may report readiness,
+friction, and publication state, but they do not grant authority to mutate
+SpecGraph, Ontology, SpecSpace, Platform, Git, or public hosting state.
+
+Every machine-readable report for this pack should carry an authority boundary
+equivalent to:
+
+```json
+{
+  "may_mutate_canonical_specs": false,
+  "may_write_ontology_package": false,
+  "may_accept_ontology_terms": false,
+  "may_create_branch_or_commit": false,
+  "may_open_pull_request": false,
+  "may_merge_pull_request": false,
+  "may_publish_read_model": false,
+  "may_execute_prompt_agent": false
+}
+```
+
+Consumers should reject or quarantine reports where any authority flag is
+missing, truthy, non-boolean, or claims write capability. A metrics report can
+say that a downstream handoff is ready; it must not perform that handoff.
 
 ## Required Input Families
 
@@ -224,6 +269,65 @@ These metrics track the final review/read-model lifecycle.
 Publishing is a public read-model event, not proof that ontology terms were
 accepted or that canonical specs were mutated outside review.
 
+## Metric Contract
+
+The following table gives a minimal machine-readable contract for each metric
+identifier. Implementations may add provenance fields, but should preserve the
+metric ids, types, nullability rules, and source-of-truth boundaries.
+
+| Metric id | Type | Unit | Nullability | Source of truth | Formula / derivation |
+| --- | --- | --- | --- | --- | --- |
+| `clarification_question_count` | integer | count | zero allowed | clarification requests | Count all emitted requests. |
+| `blocking_question_count` | integer | count | zero allowed | clarification requests | Count requests that block readiness. |
+| `review_required_question_count` | integer | count | zero allowed | clarification requests | Count requests marked review-required. |
+| `answered_question_count` | integer | count | zero allowed | draft state and answers | Count submitted draft or accepted answers. |
+| `accepted_answer_count` | integer | count | zero allowed | clarification answers | Count answers accepted for rerun. |
+| `deferred_answer_count` | integer | count | zero allowed | draft import preview and answers | Count answers with defer semantics. |
+| `invalid_answer_count` | integer | count | zero allowed | draft import preview | Count rejected or invalid drafts. |
+| `materialized_answer_count` | integer | count | zero allowed | rerun materialization | Count accepted answers that produced candidate changes. |
+| `unmaterialized_answer_count` | integer | count | zero allowed | rerun materialization | Accepted answers minus materialized answers, bounded at zero. |
+| `answer_materialization_rate` | number | ratio 0..1 | null when denominator is zero | rerun materialization | `materialized_answer_count / accepted_answer_count`. |
+| `candidate_review_hint_count` | integer | count | zero allowed | rerun input | Count non-ontology candidate review hints. |
+| `stale_answer_count` | integer | count | zero allowed | draft import preview and rerun materialization | Count answers rejected for stale refs. |
+| `ontology_gap_count_initial` | integer | count | zero allowed | candidate graph or repair session | Count ontology gaps before decisions. |
+| `ontology_gap_resolved_count` | integer | count | zero allowed | rerun preview/materialization | Count preview-resolved ontology gaps. |
+| `ontology_gap_unresolved_count` | integer | count | zero allowed | rerun preview/materialization | Count ontology gaps remaining after repair. |
+| `ontology_gap_resolution_rate` | number | ratio 0..1 | null when denominator is zero | rerun preview/materialization | `ontology_gap_resolved_count / ontology_gap_count_initial`. |
+| `ontology_project_local_term_count` | integer | count | zero allowed | ontology decisions | Count project-local term decisions. |
+| `ontology_rejected_term_count` | integer | count | zero allowed | ontology decisions | Count rejected term decisions. |
+| `ontology_deferred_term_count` | integer | count | zero allowed | ontology decisions | Count deferred term decisions. |
+| `ontology_match_kind_counts` | object | count map | empty map allowed | ontology decisions and materialization evidence | Group ontology resolutions by match kind. |
+| `candidate_gap_count_initial` | integer | count | zero allowed | candidate graph or repair session | Count product/spec gaps before materialization. |
+| `candidate_gap_resolved_count` | integer | count | zero allowed | rerun materialization | Count candidate gaps removed in preview. |
+| `candidate_gap_unresolved_count` | integer | count | zero allowed | rerun materialization | Count candidate gaps still present after repair. |
+| `candidate_gap_closure_rate` | number | ratio 0..1 | null when denominator is zero | rerun materialization | `candidate_gap_resolved_count / candidate_gap_count_initial`. |
+| `risk_accepted_count` | integer | count | zero allowed | candidate gap resolutions | Count risk-accepted resolutions. |
+| `enforcement_mechanism_added_count` | integer | count | zero allowed | candidate gap resolutions | Count enforcement-mechanism resolutions. |
+| `context_supplied_count` | integer | count | zero allowed | candidate gap resolutions | Count context-supplied resolutions. |
+| `remaining_blocker_count` | integer | count | zero allowed | repair session and gates | Count unresolved blocking findings. |
+| `rerun_count` | integer | count | zero allowed | rerun requests and execution reports | Count repair rerun attempts. |
+| `manual_handoff_count` | integer | count | zero allowed | Platform and operator handoff reports | Count explicit operator handoffs. |
+| `operator_command_count` | integer | count | zero allowed | Platform execution reports | Count operator-run commands needed to advance. |
+| `failed_gate_count` | integer | count | zero allowed | Platform and SpecGraph gate reports | Count gate failures or blocked gate reports. |
+| `stale_ref_count` | integer | count | zero allowed | gate reports and import previews | Count stale source-ref failures. |
+| `dry_run_count` | integer | count | zero allowed | Platform execution reports | Count dry-run phases. |
+| `rerun_request_count` | integer | count | zero allowed | SpecSpace rerun request state | Count rerun requests. |
+| `approval_attempt_count` | integer | count | zero allowed | approval intent and gate reports | Count approval attempts. |
+| `ready_for_candidate_approval` | boolean | flag | false when unavailable | repair session and repaired handoff | True only when candidate approval gate prerequisites are met. |
+| `candidate_approval_intent_present` | boolean | flag | false when unavailable | SpecSpace approval intent state | True when approval intent exists for the active session. |
+| `candidate_approval_decision_present` | boolean | flag | false when unavailable | Platform approval execution report | True when `candidate_approval_decision` exists. |
+| `ready_for_platform_promotion` | boolean | flag | false when unavailable | Platform approval/promotion reports | True only after approval decision and promotion prerequisites exist. |
+| `promotion_path_count` | integer | count | zero allowed | promotion gate and approval decision | Count approved materialized paths. |
+| `promotion_request_present` | boolean | flag | false when unavailable | promotion request report | True when promotion request handoff exists. |
+| `promotion_execution_present` | boolean | flag | false when unavailable | promotion execution report | True when controlled promotion execution report exists. |
+| `git_review_opened` | boolean | flag | false when unavailable | promotion execution or review report | True when review PR opened, or dry-run says it would open. |
+| `review_status` | enum | state | `not_reached` allowed | review status report | One of `not_reached`, `open`, `merged`, `blocked`, `unknown`. |
+| `review_pr_number` | integer | identifier | null when absent | review status report | Pull request number. |
+| `review_merge_commit_present` | boolean | flag | false when unavailable | review status report | True when merge commit evidence exists. |
+| `read_model_published` | boolean | flag | false when unavailable | read-model publication report | True when public-safe publication completed. |
+| `published_file_count` | integer | count | zero allowed | publication report and manifest | Count public-safe files. |
+| `published_manifest_digest_present` | boolean | flag | false when unavailable | publication report and checksums | True when manifest/checksum digest evidence exists. |
+
 ## Derived Lifecycle States
 
 Implementations may derive a coarse state for dashboards:
@@ -264,6 +368,46 @@ promotion_path_density =
 
 `promotion_path_density` is diagnostic only. A higher value does not imply a
 better candidate; it may indicate over-materialization.
+
+## Consistency Invariants
+
+Implementations should validate these invariants before publishing or displaying
+the report as a trustworthy metric artifact:
+
+```text
+0 <= blocking_question_count <= clarification_question_count
+0 <= review_required_question_count <= clarification_question_count
+0 <= accepted_answer_count <= answered_question_count
+0 <= deferred_answer_count <= answered_question_count
+0 <= invalid_answer_count <= answered_question_count
+
+0 <= materialized_answer_count <= accepted_answer_count
+0 <= unmaterialized_answer_count <= accepted_answer_count
+materialized_answer_count + unmaterialized_answer_count <= accepted_answer_count
+
+0 <= ontology_gap_resolved_count <= ontology_gap_count_initial
+0 <= ontology_gap_unresolved_count <= ontology_gap_count_initial
+ontology_gap_resolved_count + ontology_gap_unresolved_count
+  <= ontology_gap_count_initial
+
+0 <= candidate_gap_resolved_count <= candidate_gap_count_initial
+0 <= candidate_gap_unresolved_count <= candidate_gap_count_initial
+candidate_gap_resolved_count + candidate_gap_unresolved_count
+  <= candidate_gap_count_initial
+
+ready_for_platform_promotion == true
+  requires candidate_approval_decision_present == true
+  and promotion_request_present == true
+
+read_model_published == true
+  requires review_status == merged
+
+git_review_opened == true
+  requires promotion_execution_present == true
+```
+
+When an invariant fails, consumers should report `blocked` or `unknown` for the
+affected derived state rather than silently normalizing the data.
 
 ## Run Artifact Sketch
 
