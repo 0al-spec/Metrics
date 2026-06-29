@@ -20,6 +20,10 @@ including clarification load, answer materialization, ontology grounding,
 candidate repair, temporal progress, workflow friction, approval readiness, and
 read-model publication state. Its initial machine-readable report contract lives
 in [schemas/idea_maturity_metrics_report.schema.json](schemas/idea_maturity_metrics_report.schema.json).
+The validator output contract lives in
+[schemas/idea_maturity_metrics_validation_report.schema.json](schemas/idea_maturity_metrics_validation_report.schema.json),
+and the stable CLI/compatibility rules are documented in
+[VALIDATOR_CONTRACT.md](VALIDATOR_CONTRACT.md).
 Example report invariants can be checked without third-party dependencies:
 
 ```bash

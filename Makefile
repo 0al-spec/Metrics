@@ -16,6 +16,7 @@ validate: validate-idea-maturity
 
 validate-idea-maturity:
 	@$(PYTHON) scripts/metrics.py validate idea-maturity
+	@$(PYTHON) scripts/validate_idea_maturity_examples.py
 
 clean:
 	@set -e; \

@@ -1,0 +1,77 @@
+{
+  "artifact_kind": "idea_maturity_metrics_report",
+  "metric_pack_id": "idea_to_spec_maturity",
+  "authority_state": "draft_reference",
+  "candidate": {
+    "candidate_id": "invalid-authority-example",
+    "workspace_route": "/invalid-authority-example"
+  },
+  "summary": {
+    "lifecycle_state": "approval_ready",
+    "clarification_question_count": 1,
+    "blocking_question_count": 0,
+    "review_required_question_count": 0,
+    "answered_question_count": 1,
+    "accepted_answer_count": 1,
+    "deferred_answer_count": 0,
+    "invalid_answer_count": 0,
+    "materialized_answer_count": 1,
+    "unmaterialized_answer_count": 0,
+    "ontology_gap_count_initial": 0,
+    "ontology_gap_resolved_count": 0,
+    "ontology_gap_unresolved_count": 0,
+    "candidate_gap_count_initial": 0,
+    "candidate_gap_resolved_count": 0,
+    "candidate_gap_unresolved_count": 0,
+    "remaining_blocker_count": 0,
+    "candidate_approval_state": "ready",
+    "platform_promotion_state": "not_reached",
+    "review_status": "not_reached",
+    "read_model_publication_state": "not_reached"
+  },
+  "groups": {
+    "ontology_grounding": {
+      "ontology_match_kind_counts": {
+        "exact": 0,
+        "normalized_exact": 0,
+        "safe_inflection": 0,
+        "safe_phrase_match": 0,
+        "target_ref": 0,
+        "aggregate_target": 0,
+        "manual_bind": 0,
+        "manual_alias": 0,
+        "project_local_term": 0,
+        "reject": 0,
+        "defer": 0,
+        "other": 0
+      }
+    },
+    "candidate_repair": {
+      "candidate_resolution_kind_counts": {
+        "risk_accepted": 0,
+        "enforcement_mechanism_added": 0,
+        "context_supplied": 0,
+        "gap_rejected": 0,
+        "other": 0
+      }
+    }
+  },
+  "source_artifacts": [
+    "runs/invalid.json"
+  ],
+  "authority_boundary": {
+    "may_mutate_canonical_specs": false,
+    "may_write_ontology_package": false,
+    "may_accept_ontology_terms": false,
+    "may_create_branch_or_commit": false,
+    "may_open_pull_request": false,
+    "may_merge_pull_request": false,
+    "may_publish_read_model": true,
+    "may_execute_prompt_agent": false
+  },
+  "privacy_boundary": {
+    "contains_human_operator_identity": false,
+    "join_to_identity_allowed": false,
+    "minimum_aggregation_subject": "candidate_run"
+  }
+}
