@@ -35,12 +35,20 @@ VALIDATION_REPORT_EXAMPLES = (
 )
 INVALID_REPORT_EXAMPLES = (
     ROOT / "examples" / "invalid" / "idea_maturity_metrics_report.bad_authority_flag.json",
+    ROOT
+    / "examples"
+    / "invalid"
+    / "idea_maturity_metrics_report.bad_readiness_severity.json",
 )
 INVALID_VALIDATION_REPORT_EXAMPLES = (
     ROOT
     / "examples"
     / "invalid"
     / "idea_maturity_metrics_validation_report.bad_summary_counts.json",
+    ROOT
+    / "examples"
+    / "invalid"
+    / "idea_maturity_metrics_validation_report.missing_generated_at.json",
 )
 EXAMPLES = REPORT_EXAMPLES
 
@@ -109,6 +117,14 @@ class Contract:
         blocks = _object(SCHEMA_PATH, readiness_properties.get("blocks"), "blocks")
         block_items = _object(SCHEMA_PATH, blocks.get("items"), "blocks.items")
         self.readiness_blocks = set(_list(SCHEMA_PATH, block_items.get("enum"), "enum"))
+        severity = _object(
+            SCHEMA_PATH,
+            readiness_properties.get("severity"),
+            "readiness_explainer.properties.severity",
+        )
+        self.readiness_severities = set(
+            _list(SCHEMA_PATH, severity.get("enum"), "readiness_explainer.severity.enum")
+        )
         privacy = _object(SCHEMA_PATH, self.defs.get("privacy_boundary"), "privacy_boundary")
         privacy_props = _object(SCHEMA_PATH, privacy.get("properties"), "privacy.properties")
         minimum_subject = _object(
@@ -221,6 +237,12 @@ def _parse_rfc3339(path: Path, value: Any, name: str) -> None:
         dt.datetime.fromisoformat(normalized)
     except ValueError as exc:
         _fail(path, f"{name} must be an RFC 3339 timestamp: {exc}")
+
+
+def _parse_required_rfc3339(path: Path, value: Any, name: str) -> None:
+    if not isinstance(value, str) or not value:
+        _fail(path, f"{name} must be a non-empty RFC 3339 timestamp string")
+    _parse_rfc3339(path, value, name)
 
 
 def _check_summary_keys(path: Path, summary: dict[str, Any], contract: Contract) -> None:
@@ -348,6 +370,9 @@ def _check_readiness_explainers(
         for block in blocks:
             if block not in contract.readiness_blocks:
                 _fail(path, f"readiness_explainers[{index}].blocks has unsupported value")
+        severity = item.get("severity")
+        if severity is not None and severity not in contract.readiness_severities:
+            _fail(path, f"readiness_explainers[{index}].severity has unsupported value")
         evidence_refs = _list(
             path,
             item.get("evidence_refs"),
@@ -471,7 +496,7 @@ def validate_validation_report(path: Path, contract: ValidationReportContract) -
         _fail(path, "validation report metric_pack_id mismatch")
     if not isinstance(data.get("schema_version"), int) or data["schema_version"] < 1:
         _fail(path, "validation report schema_version must be a positive integer")
-    _parse_rfc3339(path, data.get("generated_at"), "generated_at")
+    _parse_required_rfc3339(path, data.get("generated_at"), "generated_at")
 
     validator = _object(path, data.get("validator"), "validator")
     for key, expected in contract.validator_consts.items():

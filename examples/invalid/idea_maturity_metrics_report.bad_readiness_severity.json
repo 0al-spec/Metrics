@@ -1,0 +1,127 @@
+{
+  "artifact_kind": "idea_maturity_metrics_report",
+  "metric_pack_id": "idea_to_spec_maturity",
+  "authority_state": "draft_reference",
+  "contract": {
+    "schema_version": 1,
+    "schema_ref": "schemas/idea_maturity_metrics_report.schema.json",
+    "validator_id": "metrics.idea_maturity_metrics.validator.v0.1",
+    "validator_version": "0.1.0",
+    "compatibility_policy": "additive_v1"
+  },
+  "candidate": {
+    "candidate_id": "local-subscription-control",
+    "workspace_route": "/local-subscription-control"
+  },
+  "summary": {
+    "lifecycle_state": "repair_required",
+    "clarification_question_count": 1,
+    "blocking_question_count": 1,
+    "review_required_question_count": 0,
+    "answered_question_count": 0,
+    "accepted_answer_count": 0,
+    "deferred_answer_count": 0,
+    "invalid_answer_count": 0,
+    "materialized_answer_count": 0,
+    "unmaterialized_answer_count": 0,
+    "answer_materialization_rate": 0,
+    "ontology_gap_count_initial": 1,
+    "ontology_gap_resolved_count": 0,
+    "ontology_gap_unresolved_count": 1,
+    "ontology_gap_resolution_rate": 0,
+    "candidate_gap_count_initial": 0,
+    "candidate_gap_resolved_count": 0,
+    "candidate_gap_unresolved_count": 0,
+    "candidate_gap_closure_rate": 1,
+    "candidate_node_count": 1,
+    "remaining_blocker_count": 1,
+    "manual_handoff_count": 0,
+    "operator_command_count": 0,
+    "failed_gate_count": 0,
+    "stale_ref_count": 0,
+    "dry_run_count": 0,
+    "rerun_count": 0,
+    "rerun_request_count": 0,
+    "approval_attempt_count": 0,
+    "time_to_first_candidate_seconds": 10,
+    "time_to_first_materialization_seconds": null,
+    "time_to_approval_ready_seconds": null,
+    "last_progress_at": "2026-06-28T10:24:00Z",
+    "stalled_phase": "repair_required",
+    "candidate_approval_state": "blocked",
+    "candidate_approval_intent_state": "not_reached",
+    "candidate_approval_decision_state": "not_reached",
+    "platform_promotion_state": "not_reached",
+    "promotion_path_count": 0,
+    "promotion_request_state": "not_reached",
+    "promotion_execution_state": "not_reached",
+    "review_status": "not_reached",
+    "review_pr_number": null,
+    "review_merge_commit_sha": null,
+    "read_model_publication_state": "not_reached",
+    "published_file_count": 0,
+    "published_manifest_digest": null
+  },
+  "groups": {
+    "ontology_grounding": {
+      "ontology_match_kind_counts": {
+        "exact": 0,
+        "normalized_exact": 0,
+        "safe_inflection": 0,
+        "safe_phrase_match": 0,
+        "target_ref": 0,
+        "aggregate_target": 0,
+        "manual_bind": 0,
+        "manual_alias": 0,
+        "project_local_term": 0,
+        "reject": 0,
+        "defer": 1,
+        "other": 0
+      }
+    },
+    "candidate_repair": {
+      "candidate_resolution_kind_counts": {
+        "risk_accepted": 0,
+        "enforcement_mechanism_added": 0,
+        "context_supplied": 0,
+        "gap_rejected": 0,
+        "other": 0
+      }
+    },
+    "workflow_friction": {
+      "failed_gate_count": 0,
+      "stale_ref_count": 0,
+      "dry_run_count": 0
+    }
+  },
+  "readiness_explainers": [
+    {
+      "id": "repair_session.unresolved_ontology_gaps",
+      "severity": "critical",
+      "message": "An ontology gap remains unresolved after the latest repair rerun.",
+      "next_action": "Review ontology gap decisions and rerun the repair preview.",
+      "blocks": [
+        "pre_sib_review",
+        "candidate_approval"
+      ],
+      "evidence_refs": [
+        "runs/repaired_idea_to_spec_repair_session.json"
+      ]
+    }
+  ],
+  "authority_boundary": {
+    "may_mutate_canonical_specs": false,
+    "may_write_ontology_package": false,
+    "may_accept_ontology_terms": false,
+    "may_create_branch_or_commit": false,
+    "may_open_pull_request": false,
+    "may_merge_pull_request": false,
+    "may_publish_read_model": false,
+    "may_execute_prompt_agent": false
+  },
+  "privacy_boundary": {
+    "contains_human_operator_identity": false,
+    "join_to_identity_allowed": false,
+    "minimum_aggregation_subject": "candidate_run"
+  }
+}
