@@ -571,13 +571,19 @@ def _check_validation_authority_boundary(
 
 def _paths_from_args(argv: list[str] | None = None) -> tuple[list[Path], bool]:
     parser = argparse.ArgumentParser(
-        description="Validate idea-to-spec lifecycle telemetry reports.",
+        description=(
+            "Validate idea-to-spec lifecycle telemetry reports and their "
+            "validation report artifacts."
+        ),
     )
     parser.add_argument(
         "reports",
         nargs="*",
         type=Path,
-        help="Report JSON files to validate. Defaults to bundled examples.",
+        help=(
+            "Report or validation-report JSON files to validate. Defaults to "
+            "bundled examples."
+        ),
     )
     args = parser.parse_args(argv)
     return args.reports, not args.reports
