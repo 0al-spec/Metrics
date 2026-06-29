@@ -108,6 +108,12 @@ Metric packs should declare one of these states:
 
 These rules apply to all metric packs in this repository.
 
+Machine-readable validators should publish a small compatibility contract next
+to their schemas and examples. For `idea_to_spec_maturity`, the current
+contract is [VALIDATOR_CONTRACT.md](VALIDATOR_CONTRACT.md), and downstream
+repositories should call `scripts/metrics.py` instead of copying validation
+logic.
+
 ### 1. Intended Use
 
 Metrics are diagnostic observability signals. They are intended for drift

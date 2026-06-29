@@ -24,9 +24,10 @@ from validate_idea_maturity_examples import (
     validate,
 )
 
-SCHEMA_VERSION = 1
+VALIDATION_REPORT_SCHEMA_VERSION = 1
 IDEA_MATURITY_VALIDATION_ARTIFACT_KIND = "idea_maturity_metrics_validation_report"
 IDEA_MATURITY_VALIDATOR_ID = "metrics.idea_maturity_metrics.validator.v0.1"
+IDEA_MATURITY_VALIDATOR_VERSION = "0.1.0"
 IDEA_MATURITY_METRIC_PACK_ID = "idea_to_spec_maturity"
 
 AUTHORITY_BOUNDARY = {
@@ -85,14 +86,19 @@ def _validate_idea_maturity_reports(paths: list[Path]) -> dict[str, Any]:
     invalid_count = len(entries) - valid_count
     return {
         "artifact_kind": IDEA_MATURITY_VALIDATION_ARTIFACT_KIND,
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": VALIDATION_REPORT_SCHEMA_VERSION,
         "generated_at": _now_iso(),
         "metric_pack_id": IDEA_MATURITY_METRIC_PACK_ID,
         "validator": {
             "id": IDEA_MATURITY_VALIDATOR_ID,
+            "version": IDEA_MATURITY_VALIDATOR_VERSION,
             "rfc_ref": "IDEA_MATURITY_METRICS.md",
             "schema_ref": "schemas/idea_maturity_metrics_report.schema.json",
+            "validation_report_schema_ref": (
+                "schemas/idea_maturity_metrics_validation_report.schema.json"
+            ),
             "script_ref": "scripts/metrics.py",
+            "compatibility_policy_ref": "VALIDATOR_CONTRACT.md#compatibility-policy",
         },
         "summary": {
             "status": "ok" if invalid_count == 0 else "failed",

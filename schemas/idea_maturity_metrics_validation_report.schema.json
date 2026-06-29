@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://0al-spec.github.io/Metrics/schemas/idea_maturity_metrics_validation_report.schema.json",
+  "title": "Idea-to-Spec Lifecycle Telemetry Validation Report",
+  "type": "object",
+  "required": [
+    "artifact_kind",
+    "schema_version",
+    "generated_at",
+    "metric_pack_id",
+    "validator",
+    "summary",
+    "authority_boundary",
+    "reports"
+  ],
+  "properties": {
+    "artifact_kind": {
+      "const": "idea_maturity_metrics_validation_report"
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metric_pack_id": {
+      "const": "idea_to_spec_maturity"
+    },
+    "validator": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "rfc_ref",
+        "schema_ref",
+        "validation_report_schema_ref",
+        "script_ref",
+        "compatibility_policy_ref"
+      ],
+      "properties": {
+        "id": {
+          "const": "metrics.idea_maturity_metrics.validator.v0.1"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rfc_ref": {
+          "const": "IDEA_MATURITY_METRICS.md"
+        },
+        "schema_ref": {
+          "const": "schemas/idea_maturity_metrics_report.schema.json"
+        },
+        "validation_report_schema_ref": {
+          "const": "schemas/idea_maturity_metrics_validation_report.schema.json"
+        },
+        "script_ref": {
+          "const": "scripts/metrics.py"
+        },
+        "compatibility_policy_ref": {
+          "const": "VALIDATOR_CONTRACT.md#compatibility-policy"
+        }
+      },
+      "additionalProperties": true
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "status",
+        "report_count",
+        "valid_count",
+        "invalid_count"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "failed"
+          ]
+        },
+        "report_count": {
+          "$ref": "#/$defs/count"
+        },
+        "valid_count": {
+          "$ref": "#/$defs/count"
+        },
+        "invalid_count": {
+          "$ref": "#/$defs/count"
+        }
+      },
+      "additionalProperties": true
+    },
+    "authority_boundary": {
+      "$ref": "#/$defs/authority_boundary"
+    },
+    "reports": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/report_validation_entry"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "authority_boundary": {
+      "type": "object",
+      "required": [
+        "may_mutate_canonical_specs",
+        "may_write_ontology_package",
+        "may_accept_ontology_terms",
+        "may_create_branch_or_commit",
+        "may_open_pull_request",
+        "may_merge_pull_request",
+        "may_publish_read_model",
+        "may_execute_prompt_agent"
+      ],
+      "properties": {
+        "may_mutate_canonical_specs": {
+          "const": false
+        },
+        "may_write_ontology_package": {
+          "const": false
+        },
+        "may_accept_ontology_terms": {
+          "const": false
+        },
+        "may_create_branch_or_commit": {
+          "const": false
+        },
+        "may_open_pull_request": {
+          "const": false
+        },
+        "may_merge_pull_request": {
+          "const": false
+        },
+        "may_publish_read_model": {
+          "const": false
+        },
+        "may_execute_prompt_agent": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "report_validation_entry": {
+      "type": "object",
+      "required": [
+        "path",
+        "status",
+        "diagnostics"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "invalid"
+          ]
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagnostic"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": [
+        "severity",
+        "message"
+      ],
+      "properties": {
+        "severity": {
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

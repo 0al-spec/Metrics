@@ -23,6 +23,9 @@
     "authority_state": {
       "const": "draft_reference"
     },
+    "contract": {
+      "$ref": "#/$defs/report_contract_metadata"
+    },
     "candidate": {
       "type": "object",
       "required": [
@@ -286,6 +289,12 @@
         "$ref": "#/$defs/policy_finding"
       }
     },
+    "readiness_explainers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/readiness_explainer"
+      }
+    },
     "economic_observability_ref": {
       "type": "object",
       "required": [
@@ -352,6 +361,36 @@
         "null"
       ],
       "format": "date-time"
+    },
+    "report_contract_metadata": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "schema_ref",
+        "validator_id",
+        "validator_version",
+        "compatibility_policy"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "schema_ref": {
+          "const": "schemas/idea_maturity_metrics_report.schema.json"
+        },
+        "validator_id": {
+          "const": "metrics.idea_maturity_metrics.validator.v0.1"
+        },
+        "validator_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compatibility_policy": {
+          "const": "additive_v1"
+        }
+      },
+      "additionalProperties": true
     },
     "workflow_state": {
       "enum": [
@@ -565,6 +604,56 @@
         },
         "observed": {
           "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "readiness_explainer": {
+      "type": "object",
+      "required": [
+        "id",
+        "message",
+        "next_action",
+        "blocks",
+        "evidence_refs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "next_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "candidate_approval",
+              "platform_promotion",
+              "git_review",
+              "read_model_publication"
+            ]
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "severity": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
         }
       },
       "additionalProperties": true

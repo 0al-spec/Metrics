@@ -168,12 +168,24 @@ itself into an authority-bearing artifact.
 This draft includes a schema-first anchor and examples:
 
 - `schemas/idea_maturity_metrics_report.schema.json`;
+- `schemas/idea_maturity_metrics_validation_report.schema.json`;
 - `examples/idea_maturity_metrics_report.happy.json`;
-- `examples/idea_maturity_metrics_report.blocked_stale_refs.json`.
+- `examples/idea_maturity_metrics_report.blocked_stale_refs.json`;
+- `examples/idea_maturity_metrics_report.readiness_explainers.json`;
+- `examples/idea_maturity_metrics_report.future_additive_fields.json`;
+- `examples/idea_maturity_metrics_validation_report.ok.json`;
+- `examples/idea_maturity_metrics_validation_report.failed.json`;
+- `examples/invalid/idea_maturity_metrics_report.bad_authority_flag.json`;
+- `examples/invalid/idea_maturity_metrics_validation_report.bad_summary_counts.json`.
 
 The blocked/stale example is intentionally more important than the happy path:
 it demonstrates stale refs, stalled repair dwell time, zero materialization, and
 policy findings without collapsing those observations into an invalid report.
+
+The stable validator invocation and compatibility rules are defined in
+`VALIDATOR_CONTRACT.md`. Consumers should treat Metrics as the source of truth
+for schema and invariant validation, rather than copying validator logic into
+SpecGraph, SpecSpace, Platform, or other sibling repositories.
 
 ## Metric Groups
 
@@ -543,6 +555,11 @@ cannot express every cross-field numeric relationship. Conformance for this pack
 is schema validation plus a separate invariant/policy validator. This repository
 includes `scripts/validate_idea_maturity_examples.py` as a small executable
 reference for bundled examples and produced report artifacts.
+
+`scripts/metrics.py validate idea-maturity` is the stable CLI entrypoint for
+sibling repositories. When called with `--output`, it emits an
+`idea_maturity_metrics_validation_report` artifact whose schema is
+`schemas/idea_maturity_metrics_validation_report.schema.json`.
 
 ## Policy Findings
 
