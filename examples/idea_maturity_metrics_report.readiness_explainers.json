@@ -101,6 +101,7 @@
       "message": "Two ontology gaps remain unresolved after the latest repair rerun.",
       "next_action": "Review ontology gap decisions and rerun the repair preview.",
       "blocks": [
+        "pre_sib_review",
         "candidate_approval"
       ],
       "evidence_refs": [

@@ -634,6 +634,8 @@
           "type": "array",
           "items": {
             "enum": [
+              "pre_sib_review",
+              "metrics_validation",
               "candidate_approval",
               "platform_promotion",
               "git_review",
