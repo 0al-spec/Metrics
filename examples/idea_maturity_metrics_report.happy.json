@@ -15,7 +15,7 @@
     "accepted_answer_count": 15,
     "deferred_answer_count": 0,
     "invalid_answer_count": 0,
-    "materialized_answer_count": 15,
+    "materialized_answer_count": 13,
     "unmaterialized_answer_count": 0,
     "answer_materialization_rate": 1.0,
     "ontology_gap_count_initial": 11,
@@ -56,6 +56,41 @@
     "published_manifest_digest": null
   },
   "groups": {
+    "answer_materialization": {
+      "answered_question_count": 15,
+      "accepted_answer_count": 15,
+      "deferred_answer_count": 0,
+      "invalid_answer_count": 0,
+      "materialized_answer_count": 13,
+      "unmaterialized_answer_count": 0,
+      "answer_materialization_rate": 1.0,
+      "per_gap_materialized_answer_count": 13,
+      "consumed_answer_count": 15,
+      "aggregate_answer_count": 2,
+      "closure_evidence_answer_count": 15,
+      "ordinary_unmaterialized_answer_count": 0,
+      "answer_accounting": {
+        "accepted_answer_request_ids": [
+          "clarification.1",
+          "clarification.2"
+        ],
+        "materialized_answer_request_ids": [
+          "clarification.1"
+        ],
+        "consumed_answer_request_ids": [
+          "clarification.1",
+          "clarification.2"
+        ],
+        "aggregate_answer_request_ids": [
+          "clarification.2"
+        ],
+        "closure_evidence_answer_request_ids": [
+          "clarification.1",
+          "clarification.2"
+        ],
+        "ordinary_unmaterialized_answer_request_ids": []
+      }
+    },
     "ontology_grounding": {
       "ontology_match_kind_counts": {
         "exact": 0,

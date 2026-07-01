@@ -216,14 +216,19 @@ actually improved."
 
 | Metric id | Meaning |
 | --- | --- |
-| `materialized_answer_count` | Accepted answers that produced review-only candidate changes. |
-| `unmaterialized_answer_count` | Accepted answers that did not change preview/materialization state. |
-| `answer_materialization_rate` | `materialized_answer_count / accepted_answer_count`. |
+| `materialized_answer_count` | Accepted answers that produced per-gap review-only candidate changes. |
+| `consumed_answer_count` | Accepted answers consumed by the rerun input overlay. |
+| `aggregate_answer_count` | Accepted answers consumed as aggregate/control evidence instead of per-gap materialization. |
+| `closure_evidence_answer_count` | Accepted answers that have either per-gap materialization or aggregate/control closure evidence. |
+| `unmaterialized_answer_count` | Accepted ordinary answers that still lack materialization or closure evidence. |
+| `answer_materialization_rate` | `closure_evidence_answer_count / accepted_answer_count`. |
 | `candidate_review_hint_count` | Accepted non-ontology hints preserved for review. |
 | `stale_answer_count` | Answers rejected because target refs or source refs no longer match. |
 
-If `accepted_answer_count > 0` and `materialized_answer_count == 0`, the workflow
-is likely collecting user work without converting it into specification progress.
+If `accepted_answer_count > 0` and `closure_evidence_answer_count == 0`, the
+workflow is likely collecting user work without converting it into specification
+progress. Aggregate/control answers should not look like ordinary unmaterialized
+debt when they were consumed by the rerun overlay as closure evidence.
 
 ### 3. Ontology Grounding
 
@@ -417,9 +422,12 @@ metric ids, types, nullability rules, and source-of-truth boundaries.
 | `accepted_answer_count` | integer | count | zero allowed | clarification answers | Count answers accepted for rerun. |
 | `deferred_answer_count` | integer | count | zero allowed | draft import preview and answers | Count answers with defer semantics. |
 | `invalid_answer_count` | integer | count | zero allowed | draft import preview | Count rejected or invalid drafts. |
-| `materialized_answer_count` | integer | count | zero allowed | rerun materialization | Count accepted answers that produced candidate changes. |
-| `unmaterialized_answer_count` | integer | count | zero allowed | rerun materialization | Accepted answers minus materialized answers, bounded at zero. |
-| `answer_materialization_rate` | number | ratio 0..1 | null when denominator is zero | rerun materialization | `materialized_answer_count / accepted_answer_count`. |
+| `materialized_answer_count` | integer | count | zero allowed | rerun materialization | Count accepted answers that produced per-gap candidate changes. |
+| `consumed_answer_count` | integer | count | zero allowed | rerun input | Count accepted answers consumed by the rerun input overlay. |
+| `aggregate_answer_count` | integer | count | zero allowed | rerun input | Count accepted answers consumed as aggregate/control evidence rather than per-gap changes. |
+| `closure_evidence_answer_count` | integer | count | zero allowed | rerun input/materialization | Count accepted answers with per-gap materialization or aggregate/control closure evidence. |
+| `unmaterialized_answer_count` | integer | count | zero allowed | rerun input/materialization | Accepted ordinary answers that still lack materialization or closure evidence. |
+| `answer_materialization_rate` | number | ratio 0..1 | null when denominator is zero | rerun input/materialization | `closure_evidence_answer_count / accepted_answer_count`. |
 | `candidate_review_hint_count` | integer | count | zero allowed | rerun input | Count non-ontology candidate review hints. |
 | `stale_answer_count` | integer | count | zero allowed | draft import preview and rerun materialization | Count answers rejected for stale refs. |
 | `ontology_gap_count_initial` | integer | count | zero allowed | candidate graph or repair session | Count ontology gaps before decisions. |
@@ -495,7 +503,7 @@ Rates should use `null` rather than `0` when the denominator is zero.
 
 ```text
 answer_materialization_rate =
-  materialized_answer_count / accepted_answer_count
+  closure_evidence_answer_count / accepted_answer_count
 
 ontology_gap_resolution_rate =
   ontology_gap_resolved_count / ontology_gap_count_initial
@@ -530,7 +538,9 @@ accepted_answer_count + invalid_answer_count + deferred_answer_count
 
 0 <= materialized_answer_count <= accepted_answer_count
 0 <= unmaterialized_answer_count <= accepted_answer_count
-materialized_answer_count + unmaterialized_answer_count <= accepted_answer_count
+0 <= closure_evidence_answer_count <= accepted_answer_count
+materialized_answer_count <= closure_evidence_answer_count
+closure_evidence_answer_count + unmaterialized_answer_count <= accepted_answer_count
 
 0 <= ontology_gap_resolved_count <= ontology_gap_count_initial
 0 <= ontology_gap_unresolved_count <= ontology_gap_count_initial
@@ -609,7 +619,7 @@ operator action.
 
 | Signal | Interpretation | Suggested action |
 | --- | --- | --- |
-| `accepted_answer_count > 0` and `materialized_answer_count == 0` | Answers are collected but not changing candidate state. | Inspect rerun materialization, preview diff, and stale refs before approval. |
+| `accepted_answer_count > 0` and `closure_evidence_answer_count == 0` | Answers are collected but not changing candidate or closure state. | Inspect rerun materialization, rerun overlay, preview diff, and stale refs before approval. |
 | `stale_ref_count > 0` | Drafts or answers target obsolete refs. | Ask the operator to rebase answers against the active candidate graph. |
 | `manual_handoff_count` rises across runs | Product workflow still depends on operator glue. | Prioritize automation or make the ownership boundary explicit. |
 | High `phase_dwell_seconds.repair_required` | Candidate may be stalled in repair. | Escalate to operator review or emit a blocked state with reason. |

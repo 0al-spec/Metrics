@@ -260,6 +260,72 @@
           },
           "additionalProperties": true
         },
+        "answer_materialization": {
+          "type": "object",
+          "properties": {
+            "answered_question_count": {
+              "$ref": "#/$defs/count"
+            },
+            "accepted_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "deferred_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "invalid_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "materialized_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "unmaterialized_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "answer_materialization_rate": {
+              "$ref": "#/$defs/nullable_ratio"
+            },
+            "per_gap_materialized_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "consumed_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "aggregate_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "closure_evidence_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "ordinary_unmaterialized_answer_count": {
+              "$ref": "#/$defs/count"
+            },
+            "answer_accounting": {
+              "type": "object",
+              "properties": {
+                "accepted_answer_request_ids": {
+                  "$ref": "#/$defs/string_array"
+                },
+                "materialized_answer_request_ids": {
+                  "$ref": "#/$defs/string_array"
+                },
+                "consumed_answer_request_ids": {
+                  "$ref": "#/$defs/string_array"
+                },
+                "aggregate_answer_request_ids": {
+                  "$ref": "#/$defs/string_array"
+                },
+                "closure_evidence_answer_request_ids": {
+                  "$ref": "#/$defs/string_array"
+                },
+                "ordinary_unmaterialized_answer_request_ids": {
+                  "$ref": "#/$defs/string_array"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        },
         "workflow_friction": {
           "type": "object",
           "additionalProperties": true
@@ -339,6 +405,13 @@
     "count": {
       "type": "integer",
       "minimum": 0
+    },
+    "string_array": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "nullable_ratio": {
       "type": [
