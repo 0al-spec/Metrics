@@ -293,6 +293,9 @@
             "aggregate_answer_count": {
               "$ref": "#/$defs/count"
             },
+            "dismissed_answer_count": {
+              "$ref": "#/$defs/count"
+            },
             "closure_evidence_answer_count": {
               "$ref": "#/$defs/count"
             },
@@ -312,6 +315,9 @@
                   "$ref": "#/$defs/string_array"
                 },
                 "aggregate_answer_request_ids": {
+                  "$ref": "#/$defs/string_array"
+                },
+                "dismissed_answer_request_ids": {
                   "$ref": "#/$defs/string_array"
                 },
                 "closure_evidence_answer_request_ids": {

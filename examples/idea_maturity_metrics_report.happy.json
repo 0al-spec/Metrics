@@ -67,6 +67,7 @@
       "per_gap_materialized_answer_count": 13,
       "consumed_answer_count": 15,
       "aggregate_answer_count": 2,
+      "dismissed_answer_count": 0,
       "closure_evidence_answer_count": 15,
       "ordinary_unmaterialized_answer_count": 0,
       "answer_accounting": {
@@ -84,6 +85,7 @@
         "aggregate_answer_request_ids": [
           "clarification.2"
         ],
+        "dismissed_answer_request_ids": [],
         "closure_evidence_answer_request_ids": [
           "clarification.1",
           "clarification.2"

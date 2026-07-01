@@ -219,6 +219,7 @@ actually improved."
 | `materialized_answer_count` | Accepted answers that produced per-gap review-only candidate changes. |
 | `consumed_answer_count` | Accepted answers consumed by the rerun input overlay. |
 | `aggregate_answer_count` | Accepted answers consumed as aggregate/control evidence instead of per-gap materialization. |
+| `dismissed_answer_count` | Accepted reject/dismiss actions consumed by the rerun input overlay without counting as closure evidence. |
 | `closure_evidence_answer_count` | Accepted answers that have either per-gap materialization or aggregate/control closure evidence. |
 | `unmaterialized_answer_count` | Accepted ordinary answers that still lack materialization or closure evidence. |
 | `answer_materialization_rate` | `closure_evidence_answer_count / accepted_answer_count`. |
@@ -425,6 +426,7 @@ metric ids, types, nullability rules, and source-of-truth boundaries.
 | `materialized_answer_count` | integer | count | zero allowed | rerun materialization | Count accepted answers that produced per-gap candidate changes. |
 | `consumed_answer_count` | integer | count | zero allowed | rerun input | Count accepted answers consumed by the rerun input overlay. |
 | `aggregate_answer_count` | integer | count | zero allowed | rerun input | Count accepted answers consumed as aggregate/control evidence rather than per-gap changes. |
+| `dismissed_answer_count` | integer | count | zero allowed | rerun input | Count accepted reject/dismiss actions that are consumed but not closure evidence. |
 | `closure_evidence_answer_count` | integer | count | zero allowed | rerun input/materialization | Count accepted answers with per-gap materialization or aggregate/control closure evidence. |
 | `unmaterialized_answer_count` | integer | count | zero allowed | rerun input/materialization | Accepted ordinary answers that still lack materialization or closure evidence. |
 | `answer_materialization_rate` | number | ratio 0..1 | null when denominator is zero | rerun input/materialization | `closure_evidence_answer_count / accepted_answer_count`. |
@@ -539,8 +541,10 @@ accepted_answer_count + invalid_answer_count + deferred_answer_count
 0 <= materialized_answer_count <= accepted_answer_count
 0 <= unmaterialized_answer_count <= accepted_answer_count
 0 <= closure_evidence_answer_count <= accepted_answer_count
+0 <= dismissed_answer_count <= accepted_answer_count
 materialized_answer_count <= closure_evidence_answer_count
-closure_evidence_answer_count + unmaterialized_answer_count <= accepted_answer_count
+closure_evidence_answer_count + dismissed_answer_count + unmaterialized_answer_count
+  <= accepted_answer_count
 
 0 <= ontology_gap_resolved_count <= ontology_gap_count_initial
 0 <= ontology_gap_unresolved_count <= ontology_gap_count_initial
