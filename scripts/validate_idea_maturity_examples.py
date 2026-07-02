@@ -39,6 +39,10 @@ INVALID_REPORT_EXAMPLES = (
     / "examples"
     / "invalid"
     / "idea_maturity_metrics_report.bad_readiness_severity.json",
+    ROOT
+    / "examples"
+    / "invalid"
+    / "idea_maturity_metrics_report.bad_project_local_review_count.json",
 )
 INVALID_VALIDATION_REPORT_EXAMPLES = (
     ROOT
@@ -101,6 +105,10 @@ class Contract:
         self.summary_enums = self._summary_enums(summary_properties)
         self.authority_keys = self._required_def_keys("authority_boundary")
         self.ontology_match_keys = self._required_def_keys("ontology_match_kind_counts")
+        (
+            self.project_local_ontology_review_keys,
+            self.project_local_ontology_review_count_keys,
+        ) = self._object_property_keys("project_local_ontology_review")
         self.candidate_resolution_keys = self._required_def_keys(
             "candidate_resolution_kind_counts"
         )
@@ -137,6 +145,20 @@ class Contract:
     def _required_def_keys(self, def_name: str) -> set[str]:
         definition = _object(SCHEMA_PATH, self.defs.get(def_name), f"$defs.{def_name}")
         return set(_list(SCHEMA_PATH, definition.get("required"), f"$defs.{def_name}.required"))
+
+    def _object_property_keys(self, def_name: str) -> tuple[set[str], set[str]]:
+        definition = _object(SCHEMA_PATH, self.defs.get(def_name), f"$defs.{def_name}")
+        properties = _object(
+            SCHEMA_PATH,
+            definition.get("properties"),
+            f"$defs.{def_name}.properties",
+        )
+        count_keys = {
+            key
+            for key, value in properties.items()
+            if isinstance(value, dict) and value.get("$ref") == "#/$defs/count"
+        }
+        return set(properties), count_keys
 
     def _summary_fields_with_ref(
         self,
@@ -400,6 +422,35 @@ def _check_closed_count_map(
             _fail(path, f"{name}.{key} must be a non-negative integer")
 
 
+def _check_project_local_ontology_review(
+    path: Path,
+    value: Any,
+    contract: Contract,
+) -> None:
+    if value is None:
+        return
+    name = "groups.ontology_grounding.project_local_ontology_review"
+    review = _object(path, value, name)
+    for key, item in review.items():
+        if (
+            key not in contract.project_local_ontology_review_keys
+            and not key.startswith(X_EXTENSION_PREFIX)
+        ):
+            _fail(path, f"{name}.{key} is not known or x-*")
+        if key in contract.project_local_ontology_review_count_keys:
+            if not isinstance(item, int) or item < 0:
+                _fail(path, f"{name}.{key} must be a non-negative integer")
+    ready = review.get("ready_for_maturity")
+    if ready is not None and not isinstance(ready, bool):
+        _fail(path, f"{name}.ready_for_maturity must be boolean")
+    evidence_refs = review.get("evidence_refs")
+    if evidence_refs is not None:
+        refs = _list(path, evidence_refs, f"{name}.evidence_refs")
+        for index, ref in enumerate(refs):
+            if not isinstance(ref, str) or not ref:
+                _fail(path, f"{name}.evidence_refs[{index}] must be a non-empty string")
+
+
 def _check_count_invariants(path: Path, summary: dict[str, Any]) -> None:
     clarification = _count(path, summary, "clarification_question_count")
     blocking = _count(path, summary, "blocking_question_count")
@@ -478,6 +529,11 @@ def validate(path: Path, contract: Contract) -> None:
         ontology.get("ontology_match_kind_counts"),
         "groups.ontology_grounding.ontology_match_kind_counts",
         contract.ontology_match_keys,
+    )
+    _check_project_local_ontology_review(
+        path,
+        ontology.get("project_local_ontology_review"),
+        contract,
     )
     candidate = _object(path, groups.get("candidate_repair"), "groups.candidate_repair")
     _check_closed_count_map(
