@@ -109,6 +109,39 @@
         "ontology_gap_resolution_rate": {
           "$ref": "#/$defs/nullable_ratio"
         },
+        "project_local_ontology_review_status": {
+          "type": "string"
+        },
+        "project_local_ontology_accepted_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_keep_local_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_bind_existing_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_alias_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_request_promotion_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_reject_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_deferred_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_invalid_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_missing_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "project_local_ontology_blocking_decision_count": {
+          "$ref": "#/$defs/count"
+        },
         "candidate_gap_count_initial": {
           "$ref": "#/$defs/count"
         },
@@ -247,6 +280,9 @@
           "properties": {
             "ontology_match_kind_counts": {
               "$ref": "#/$defs/ontology_match_kind_counts"
+            },
+            "project_local_ontology_review": {
+              "$ref": "#/$defs/project_local_ontology_review"
             }
           },
           "additionalProperties": true
@@ -559,6 +595,63 @@
         }
       },
       "additionalProperties": false
+    },
+    "project_local_ontology_review": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "accepted_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "maturity_evidence_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "keep_project_local_count": {
+          "$ref": "#/$defs/count"
+        },
+        "bind_existing_count": {
+          "$ref": "#/$defs/count"
+        },
+        "alias_count": {
+          "$ref": "#/$defs/count"
+        },
+        "request_promotion_count": {
+          "$ref": "#/$defs/count"
+        },
+        "reject_count": {
+          "$ref": "#/$defs/count"
+        },
+        "deferred_count": {
+          "$ref": "#/$defs/count"
+        },
+        "non_resolving_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "invalid_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "missing_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "blocking_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "follow_up_decision_count": {
+          "$ref": "#/$defs/count"
+        },
+        "effect_count": {
+          "$ref": "#/$defs/count"
+        },
+        "ready_for_maturity": {
+          "type": "boolean"
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/string_array"
+        }
+      },
+      "additionalProperties": true
     },
     "candidate_resolution_kind_counts": {
       "type": "object",

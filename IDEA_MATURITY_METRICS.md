@@ -246,6 +246,17 @@ ontology frame or intentionally kept project-local.
 | `ontology_rejected_term_count` | Terms rejected as non-domain or not useful. |
 | `ontology_deferred_term_count` | Terms deferred for later owner review. |
 | `ontology_match_kind_counts` | Resolution counts by match kind. |
+| `project_local_ontology_review_status` | Status of the project-local ontology decision effect report. |
+| `project_local_ontology_accepted_decision_count` | Accepted project-local ontology review decisions counted as review evidence. |
+| `project_local_ontology_keep_local_count` | Accepted decisions to keep a term project-local. |
+| `project_local_ontology_bind_existing_count` | Accepted decisions binding a project-local term to an existing ontology term. |
+| `project_local_ontology_alias_count` | Accepted alias decisions for project-local terms. |
+| `project_local_ontology_request_promotion_count` | Accepted requests to promote a term later, without accepting it globally now. |
+| `project_local_ontology_reject_count` | Accepted decisions rejecting a project-local term. |
+| `project_local_ontology_deferred_decision_count` | Deferred project-local ontology decisions requiring follow-up. |
+| `project_local_ontology_invalid_decision_count` | Invalid project-local ontology decisions. |
+| `project_local_ontology_missing_decision_count` | Required project-local ontology decisions not yet provided. |
+| `project_local_ontology_blocking_decision_count` | Project-local ontology decisions that currently block maturity evidence. |
 
 Closed required `ontology_match_kind_counts` key set:
 
@@ -440,6 +451,17 @@ metric ids, types, nullability rules, and source-of-truth boundaries.
 | `ontology_rejected_term_count` | integer | count | zero allowed | ontology decisions | Count rejected term decisions. |
 | `ontology_deferred_term_count` | integer | count | zero allowed | ontology decisions | Count deferred term decisions. |
 | `ontology_match_kind_counts` | object | count map | empty map allowed | ontology decisions and materialization evidence | Group ontology resolutions by match kind. |
+| `project_local_ontology_review_status` | string | status | optional | project-local ontology decision effect report | Status of the review evidence surface. |
+| `project_local_ontology_accepted_decision_count` | integer | count | zero allowed | project-local ontology decision effect report | Accepted review decisions counted as maturity evidence. |
+| `project_local_ontology_keep_local_count` | integer | count | zero allowed | project-local ontology decision effect report | Count keep-local decisions. |
+| `project_local_ontology_bind_existing_count` | integer | count | zero allowed | project-local ontology decision effect report | Count existing-term binding decisions. |
+| `project_local_ontology_alias_count` | integer | count | zero allowed | project-local ontology decision effect report | Count alias decisions. |
+| `project_local_ontology_request_promotion_count` | integer | count | zero allowed | project-local ontology decision effect report | Count promotion-request follow-ups. |
+| `project_local_ontology_reject_count` | integer | count | zero allowed | project-local ontology decision effect report | Count rejected project-local terms. |
+| `project_local_ontology_deferred_decision_count` | integer | count | zero allowed | project-local ontology decision effect report | Count deferred non-resolving decisions. |
+| `project_local_ontology_invalid_decision_count` | integer | count | zero allowed | project-local ontology decision effect report | Count invalid decisions. |
+| `project_local_ontology_missing_decision_count` | integer | count | zero allowed | project-local ontology decision effect report | Count required decisions not yet supplied. |
+| `project_local_ontology_blocking_decision_count` | integer | count | zero allowed | project-local ontology decision effect report | Count invalid or missing decisions blocking maturity evidence. |
 | `candidate_gap_count_initial` | integer | count | zero allowed | candidate graph or repair session | Count product/spec gaps before materialization. |
 | `candidate_gap_resolved_count` | integer | count | zero allowed | rerun materialization | Count candidate gaps removed in preview. |
 | `candidate_gap_unresolved_count` | integer | count | zero allowed | rerun materialization | Count candidate gaps still present after repair. |
