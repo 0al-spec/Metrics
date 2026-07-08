@@ -109,6 +109,10 @@ class Contract:
             self.project_local_ontology_review_keys,
             self.project_local_ontology_review_count_keys,
         ) = self._object_property_keys("project_local_ontology_review")
+        (
+            self.candidate_structure_depth_keys,
+            self.candidate_structure_depth_count_keys,
+        ) = self._object_property_keys("candidate_structure_depth")
         self.candidate_resolution_keys = self._required_def_keys(
             "candidate_resolution_kind_counts"
         )
@@ -451,6 +455,26 @@ def _check_project_local_ontology_review(
                 _fail(path, f"{name}.evidence_refs[{index}] must be a non-empty string")
 
 
+def _check_candidate_structure_depth(
+    path: Path,
+    value: Any,
+    contract: Contract,
+) -> None:
+    if value is None:
+        return
+    name = "groups.candidate_structure_depth"
+    depth = _object(path, value, name)
+    for key, item in depth.items():
+        if (
+            key not in contract.candidate_structure_depth_keys
+            and not key.startswith(X_EXTENSION_PREFIX)
+        ):
+            _fail(path, f"{name}.{key} is not known or x-*")
+        if key in contract.candidate_structure_depth_count_keys:
+            if not isinstance(item, int) or item < 0:
+                _fail(path, f"{name}.{key} must be a non-negative integer")
+
+
 def _check_count_invariants(path: Path, summary: dict[str, Any]) -> None:
     clarification = _count(path, summary, "clarification_question_count")
     blocking = _count(path, summary, "blocking_question_count")
@@ -541,6 +565,11 @@ def validate(path: Path, contract: Contract) -> None:
         candidate.get("candidate_resolution_kind_counts"),
         "groups.candidate_repair.candidate_resolution_kind_counts",
         contract.candidate_resolution_keys,
+    )
+    _check_candidate_structure_depth(
+        path,
+        groups.get("candidate_structure_depth"),
+        contract,
     )
 
 
