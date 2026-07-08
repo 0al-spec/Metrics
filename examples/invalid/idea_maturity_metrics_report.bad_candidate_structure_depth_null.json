@@ -1,0 +1,199 @@
+{
+  "artifact_kind": "idea_maturity_metrics_report",
+  "authority_boundary": {
+    "may_accept_ontology_terms": false,
+    "may_create_branch_or_commit": false,
+    "may_execute_prompt_agent": false,
+    "may_merge_pull_request": false,
+    "may_mutate_canonical_specs": false,
+    "may_open_pull_request": false,
+    "may_publish_read_model": false,
+    "may_write_ontology_package": false
+  },
+  "authority_state": "draft_reference",
+  "candidate": {
+    "candidate_id": "local-subscription-control",
+    "workspace_route": "/local-subscription-control"
+  },
+  "economic_observability_ref": {
+    "metric_pack_id": "sib_economic_observability",
+    "run_cost_report_ref": "runs/idea_to_spec_cost_report.json",
+    "token_footprint_available": false,
+    "tool_footprint_available": true
+  },
+  "groups": {
+    "answer_materialization": {
+      "accepted_answer_count": 15,
+      "aggregate_answer_count": 2,
+      "answer_accounting": {
+        "accepted_answer_request_ids": [
+          "clarification.1",
+          "clarification.2"
+        ],
+        "aggregate_answer_request_ids": [
+          "clarification.2"
+        ],
+        "closure_evidence_answer_request_ids": [
+          "clarification.1",
+          "clarification.2"
+        ],
+        "consumed_answer_request_ids": [
+          "clarification.1",
+          "clarification.2"
+        ],
+        "dismissed_answer_request_ids": [],
+        "materialized_answer_request_ids": [
+          "clarification.1"
+        ],
+        "ordinary_unmaterialized_answer_request_ids": []
+      },
+      "answer_materialization_rate": 1.0,
+      "answered_question_count": 15,
+      "closure_evidence_answer_count": 15,
+      "consumed_answer_count": 15,
+      "deferred_answer_count": 0,
+      "dismissed_answer_count": 0,
+      "invalid_answer_count": 0,
+      "materialized_answer_count": 13,
+      "ordinary_unmaterialized_answer_count": 0,
+      "per_gap_materialized_answer_count": 13,
+      "unmaterialized_answer_count": 0
+    },
+    "candidate_repair": {
+      "candidate_resolution_kind_counts": {
+        "context_supplied": 0,
+        "enforcement_mechanism_added": 3,
+        "gap_rejected": 0,
+        "other": 0,
+        "risk_accepted": 1
+      }
+    },
+    "candidate_structure_depth": null,
+    "ontology_grounding": {
+      "ontology_match_kind_counts": {
+        "aggregate_target": 0,
+        "defer": 0,
+        "exact": 0,
+        "manual_alias": 0,
+        "manual_bind": 0,
+        "normalized_exact": 1,
+        "other": 0,
+        "project_local_term": 9,
+        "reject": 0,
+        "safe_inflection": 1,
+        "safe_phrase_match": 0,
+        "target_ref": 0
+      },
+      "project_local_ontology_review": {
+        "accepted_decision_count": 9,
+        "alias_count": 0,
+        "bind_existing_count": 0,
+        "blocking_decision_count": 0,
+        "deferred_count": 0,
+        "effect_count": 9,
+        "evidence_refs": [
+          "runs/project_local_ontology_review_decisions.json"
+        ],
+        "follow_up_decision_count": 0,
+        "invalid_decision_count": 0,
+        "keep_project_local_count": 9,
+        "maturity_evidence_decision_count": 9,
+        "missing_decision_count": 0,
+        "non_resolving_decision_count": 0,
+        "ready_for_maturity": true,
+        "reject_count": 0,
+        "request_promotion_count": 0,
+        "status": "project_local_ontology_decision_effect_ready"
+      }
+    },
+    "temporal_progress": {
+      "no_progress_rerun_count": 0,
+      "phase_dwell_seconds": {
+        "approval_ready": 0,
+        "intake_ready": 180,
+        "repair_required": 900
+      }
+    },
+    "workflow_friction": {
+      "dry_run_count": 0,
+      "failed_gate_count": 0,
+      "stale_ref_count": 0
+    }
+  },
+  "metric_pack_id": "idea_to_spec_maturity",
+  "policy_findings": [],
+  "privacy_boundary": {
+    "contains_human_operator_identity": false,
+    "join_to_identity_allowed": false,
+    "minimum_aggregation_subject": "candidate_run"
+  },
+  "source_artifacts": [
+    "runs/repaired_idea_to_spec_repair_session.json",
+    "runs/repaired_candidate_promotion_handoff_report.json"
+  ],
+  "summary": {
+    "accepted_answer_count": 15,
+    "answer_materialization_rate": 1.0,
+    "answered_question_count": 15,
+    "approval_attempt_count": 0,
+    "blocking_question_count": 1,
+    "candidate_approval_decision_state": "not_reached",
+    "candidate_approval_intent_state": "not_reached",
+    "candidate_approval_state": "ready",
+    "candidate_gap_closure_rate": 1.0,
+    "candidate_gap_count_initial": 4,
+    "candidate_gap_resolved_count": 4,
+    "candidate_gap_unresolved_count": 0,
+    "candidate_node_count": 8,
+    "clarification_question_count": 25,
+    "deferred_answer_count": 0,
+    "dry_run_count": 0,
+    "failed_gate_count": 0,
+    "invalid_answer_count": 0,
+    "last_progress_at": "2026-06-28T10:24:00Z",
+    "lifecycle_state": "approval_ready",
+    "manual_handoff_count": 0,
+    "materialized_answer_count": 13,
+    "ontology_gap_count_initial": 11,
+    "ontology_gap_resolution_rate": 1.0,
+    "ontology_gap_resolved_count": 11,
+    "ontology_gap_unresolved_count": 0,
+    "operator_command_count": 0,
+    "platform_promotion_state": "not_reached",
+    "project_local_ontology_accepted_decision_count": 9,
+    "project_local_ontology_alias_count": 0,
+    "project_local_ontology_bind_existing_count": 0,
+    "project_local_ontology_blocking_decision_count": 0,
+    "project_local_ontology_deferred_decision_count": 0,
+    "project_local_ontology_invalid_decision_count": 0,
+    "project_local_ontology_keep_local_count": 9,
+    "project_local_ontology_missing_decision_count": 0,
+    "project_local_ontology_reject_count": 0,
+    "project_local_ontology_request_promotion_count": 0,
+    "project_local_ontology_review_status": "project_local_ontology_decision_effect_ready",
+    "promotion_execution_state": "not_reached",
+    "promotion_path_count": 8,
+    "promotion_request_state": "not_reached",
+    "published_file_count": 0,
+    "published_manifest_digest": null,
+    "read_model_publication_state": "not_reached",
+    "remaining_blocker_count": 0,
+    "rerun_count": 1,
+    "rerun_request_count": 1,
+    "review_merge_commit_sha": null,
+    "review_pr_number": null,
+    "review_required_question_count": 14,
+    "review_status": "not_reached",
+    "stale_ref_count": 0,
+    "stalled_phase": null,
+    "time_to_approval_ready_seconds": 1440,
+    "time_to_first_candidate_seconds": 180,
+    "time_to_first_materialization_seconds": 620,
+    "unmaterialized_answer_count": 0
+  },
+  "timeline": {
+    "approval_ready_at": "2026-06-28T10:24:00Z",
+    "candidate_graph_created_at": "2026-06-28T10:03:00Z",
+    "intake_started_at": "2026-06-28T10:00:00Z"
+  }
+}

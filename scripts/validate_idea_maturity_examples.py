@@ -43,6 +43,14 @@ INVALID_REPORT_EXAMPLES = (
     / "examples"
     / "invalid"
     / "idea_maturity_metrics_report.bad_project_local_review_count.json",
+    ROOT
+    / "examples"
+    / "invalid"
+    / "idea_maturity_metrics_report.bad_candidate_structure_depth_null.json",
+    ROOT
+    / "examples"
+    / "invalid"
+    / "idea_maturity_metrics_report.bad_candidate_structure_depth_bool.json",
 )
 INVALID_VALIDATION_REPORT_EXAMPLES = (
     ROOT
@@ -460,8 +468,6 @@ def _check_candidate_structure_depth(
     value: Any,
     contract: Contract,
 ) -> None:
-    if value is None:
-        return
     name = "groups.candidate_structure_depth"
     depth = _object(path, value, name)
     for key, item in depth.items():
@@ -471,7 +477,7 @@ def _check_candidate_structure_depth(
         ):
             _fail(path, f"{name}.{key} is not known or x-*")
         if key in contract.candidate_structure_depth_count_keys:
-            if not isinstance(item, int) or item < 0:
+            if not isinstance(item, int) or isinstance(item, bool) or item < 0:
                 _fail(path, f"{name}.{key} must be a non-negative integer")
 
 
@@ -566,11 +572,12 @@ def validate(path: Path, contract: Contract) -> None:
         "groups.candidate_repair.candidate_resolution_kind_counts",
         contract.candidate_resolution_keys,
     )
-    _check_candidate_structure_depth(
-        path,
-        groups.get("candidate_structure_depth"),
-        contract,
-    )
+    if "candidate_structure_depth" in groups:
+        _check_candidate_structure_depth(
+            path,
+            groups.get("candidate_structure_depth"),
+            contract,
+        )
 
 
 def validate_validation_report(path: Path, contract: ValidationReportContract) -> None:
