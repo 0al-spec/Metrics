@@ -347,6 +347,14 @@ interpretation should remain visible through `kind`, `source`, `message`,
 `next_action`, and `evidence_refs`, not by overloading approval, promotion, Git,
 or publication authority blocks.
 
+Producers may also derive product-specific clarification prompts from these
+counts, for example asking for actors when `actor_count = 0` or asking for
+command/event links when `workflow_edge_count = 0`. Such prompts are
+producer/consumer behavior, not Metrics contract fields. The Metrics layer must
+continue to publish only objective counts and validation status; it must not
+define the prompt wording, answer schema, rerun policy, readiness gate, score,
+or authority boundary for those clarification loops.
+
 ### 6. Workflow Friction
 
 These metrics expose where the product lane still depends on manual operator
