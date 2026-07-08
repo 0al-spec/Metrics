@@ -306,7 +306,38 @@ Closed required `candidate_resolution_kind_counts` key set:
 For reviewability, gap closure must preserve evidence such as `answer_id`,
 `target_ref`, node scope, and resolution kind.
 
-### 5. Workflow Friction
+### 5. Candidate Structure and Event-Storming Depth
+
+These observations describe whether the candidate has enough explicit
+event-storming and graph structure to be inspectable. They do not introduce a
+new maturity score and they do not replace existing lifecycle metrics such as
+`candidate_node_count` or `promotion_path_count`.
+
+| Metric id | Meaning |
+| --- | --- |
+| `actor_count` | Actors captured in the event-storming intake. |
+| `command_count` | Commands captured in the event-storming intake. |
+| `domain_event_count` | Domain events captured in the event-storming intake. |
+| `policy_count` | Policies captured in the event-storming intake. |
+| `constraint_count` | Constraints captured in the event-storming intake. |
+| `topology_edge_count` | Candidate graph topology edges. |
+| `workflow_edge_count` | Candidate graph workflow edges such as actor-command, command-event, event-policy, policy-command, or constraint-command relations. |
+| `requirement_count` | Candidate requirements attached to material candidate nodes. |
+| `acceptance_criteria_count` | Acceptance criteria attached to material candidate nodes. |
+
+Interpretation: these are raw structural observations. `actor_count = 0` or
+`domain_event_count = 0` usually means the event-storming model is shallow.
+`workflow_edge_count = 0` means the candidate is likely a flat node list rather
+than an inspectable workflow model. `requirement_count = 0` or
+`acceptance_criteria_count = 0` means candidate materialization exists without
+enough spec-level verification surface.
+
+These observations should be reported in
+`groups.candidate_structure_depth`. Producers may also emit readiness explainers
+or policy findings when a shallow structure blocks a product-facing flow, but
+the metrics themselves do not grant approval, promotion, or Git authority.
+
+### 6. Workflow Friction
 
 These metrics expose where the product lane still depends on manual operator
 handoffs or repeated recovery.
@@ -324,7 +355,7 @@ handoffs or repeated recovery.
 These are product-ergonomics signals. High friction may be acceptable in early
 MVP/bootstrap mode but should trend down for product workspaces.
 
-### 6. Temporal Progress and Stalling
+### 7. Temporal Progress and Stalling
 
 These metrics make "stalled" observable rather than inferred from a static
 snapshot.
@@ -346,7 +377,7 @@ computable from available evidence. The reason must remain observable through
 adjacent lifecycle state, timeline evidence, or policy findings, such as
 `not_reached`, `unknown`, or `stale_ref_count`.
 
-### 7. Promotion Readiness
+### 8. Promotion Readiness
 
 These observations describe lifecycle readiness without claiming that promotion
 has actually happened. They are lifecycle states and evidence, not scalar
@@ -379,7 +410,7 @@ Recommended state values:
 - `executed`;
 - `failed`.
 
-### 8. Review and Publication Completion
+### 9. Review and Publication Completion
 
 These metrics track the final review/read-model lifecycle.
 
@@ -398,7 +429,7 @@ accepted or that canonical specs were mutated outside review.
 `read_model_publication_state` should use `not_reached`, `not_available`,
 `unknown`, `blocked`, `published`, `dry_run`, or `failed`.
 
-### 9. Economic Observability Bridge
+### 10. Economic Observability Bridge
 
 This pack does not define cost formulas. It may link to the
 `sib_economic_observability` pack when token footprint, tool footprint, pricing
@@ -470,6 +501,15 @@ metric ids, types, nullability rules, and source-of-truth boundaries.
 | `risk_accepted_count` | integer | count | zero allowed | candidate gap resolutions | Count risk-accepted resolutions. |
 | `enforcement_mechanism_added_count` | integer | count | zero allowed | candidate gap resolutions | Count enforcement-mechanism resolutions. |
 | `context_supplied_count` | integer | count | zero allowed | candidate gap resolutions | Count context-supplied resolutions. |
+| `actor_count` | integer | count | zero allowed | event-storming intake | Count actor entries in `event_storming.actors`. |
+| `command_count` | integer | count | zero allowed | event-storming intake | Count command entries in `event_storming.commands`. |
+| `domain_event_count` | integer | count | zero allowed | event-storming intake | Count domain event entries in `event_storming.domain_events`. |
+| `policy_count` | integer | count | zero allowed | event-storming intake | Count policy entries in `event_storming.policies`. |
+| `constraint_count` | integer | count | zero allowed | event-storming intake | Count constraint entries in `event_storming.constraints`. |
+| `topology_edge_count` | integer | count | zero allowed | candidate graph | Count all candidate graph topology edges. |
+| `workflow_edge_count` | integer | count | zero allowed | candidate graph | Count workflow topology edges from the known workflow relation vocabulary. |
+| `requirement_count` | integer | count | zero allowed | candidate graph | Count candidate node requirement records. |
+| `acceptance_criteria_count` | integer | count | zero allowed | candidate graph | Count candidate node acceptance criteria records. |
 | `remaining_blocker_count` | integer | count | zero allowed | repair session and gates | Count unresolved blocking findings. |
 | `rerun_count` | integer | count | zero allowed | rerun requests and execution reports | Count repair rerun attempts. |
 | `time_to_first_candidate_seconds` | number | seconds | null when not reached or unknown | timeline | Intake start to first candidate graph. |
@@ -738,6 +778,17 @@ artifact paths, or policy finding text.
         "gap_rejected": 0,
         "other": 0
       }
+    },
+    "candidate_structure_depth": {
+      "actor_count": 2,
+      "command_count": 3,
+      "domain_event_count": 3,
+      "policy_count": 1,
+      "constraint_count": 2,
+      "topology_edge_count": 11,
+      "workflow_edge_count": 8,
+      "requirement_count": 8,
+      "acceptance_criteria_count": 8
     },
     "workflow_friction": {
       "failed_gate_count": 0,

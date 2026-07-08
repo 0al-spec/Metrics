@@ -43,6 +43,14 @@ INVALID_REPORT_EXAMPLES = (
     / "examples"
     / "invalid"
     / "idea_maturity_metrics_report.bad_project_local_review_count.json",
+    ROOT
+    / "examples"
+    / "invalid"
+    / "idea_maturity_metrics_report.bad_candidate_structure_depth_null.json",
+    ROOT
+    / "examples"
+    / "invalid"
+    / "idea_maturity_metrics_report.bad_candidate_structure_depth_bool.json",
 )
 INVALID_VALIDATION_REPORT_EXAMPLES = (
     ROOT
@@ -109,6 +117,10 @@ class Contract:
             self.project_local_ontology_review_keys,
             self.project_local_ontology_review_count_keys,
         ) = self._object_property_keys("project_local_ontology_review")
+        (
+            self.candidate_structure_depth_keys,
+            self.candidate_structure_depth_count_keys,
+        ) = self._object_property_keys("candidate_structure_depth")
         self.candidate_resolution_keys = self._required_def_keys(
             "candidate_resolution_kind_counts"
         )
@@ -451,6 +463,24 @@ def _check_project_local_ontology_review(
                 _fail(path, f"{name}.evidence_refs[{index}] must be a non-empty string")
 
 
+def _check_candidate_structure_depth(
+    path: Path,
+    value: Any,
+    contract: Contract,
+) -> None:
+    name = "groups.candidate_structure_depth"
+    depth = _object(path, value, name)
+    for key, item in depth.items():
+        if (
+            key not in contract.candidate_structure_depth_keys
+            and not key.startswith(X_EXTENSION_PREFIX)
+        ):
+            _fail(path, f"{name}.{key} is not known or x-*")
+        if key in contract.candidate_structure_depth_count_keys:
+            if not isinstance(item, int) or isinstance(item, bool) or item < 0:
+                _fail(path, f"{name}.{key} must be a non-negative integer")
+
+
 def _check_count_invariants(path: Path, summary: dict[str, Any]) -> None:
     clarification = _count(path, summary, "clarification_question_count")
     blocking = _count(path, summary, "blocking_question_count")
@@ -542,6 +572,12 @@ def validate(path: Path, contract: Contract) -> None:
         "groups.candidate_repair.candidate_resolution_kind_counts",
         contract.candidate_resolution_keys,
     )
+    if "candidate_structure_depth" in groups:
+        _check_candidate_structure_depth(
+            path,
+            groups.get("candidate_structure_depth"),
+            contract,
+        )
 
 
 def validate_validation_report(path: Path, contract: ValidationReportContract) -> None:

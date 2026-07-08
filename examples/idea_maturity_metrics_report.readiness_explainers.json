@@ -88,6 +88,17 @@
         "other": 0
       }
     },
+    "candidate_structure_depth": {
+      "actor_count": 0,
+      "command_count": 2,
+      "domain_event_count": 0,
+      "policy_count": 0,
+      "constraint_count": 2,
+      "topology_edge_count": 2,
+      "workflow_edge_count": 0,
+      "requirement_count": 4,
+      "acceptance_criteria_count": 4
+    },
     "workflow_friction": {
       "failed_gate_count": 1,
       "stale_ref_count": 1,

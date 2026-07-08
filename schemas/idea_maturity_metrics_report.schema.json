@@ -296,6 +296,9 @@
           },
           "additionalProperties": true
         },
+        "candidate_structure_depth": {
+          "$ref": "#/$defs/candidate_structure_depth"
+        },
         "answer_materialization": {
           "type": "object",
           "properties": {
@@ -685,6 +688,39 @@
         }
       },
       "additionalProperties": false
+    },
+    "candidate_structure_depth": {
+      "type": "object",
+      "properties": {
+        "actor_count": {
+          "$ref": "#/$defs/count"
+        },
+        "command_count": {
+          "$ref": "#/$defs/count"
+        },
+        "domain_event_count": {
+          "$ref": "#/$defs/count"
+        },
+        "policy_count": {
+          "$ref": "#/$defs/count"
+        },
+        "constraint_count": {
+          "$ref": "#/$defs/count"
+        },
+        "topology_edge_count": {
+          "$ref": "#/$defs/count"
+        },
+        "workflow_edge_count": {
+          "$ref": "#/$defs/count"
+        },
+        "requirement_count": {
+          "$ref": "#/$defs/count"
+        },
+        "acceptance_criteria_count": {
+          "$ref": "#/$defs/count"
+        }
+      },
+      "additionalProperties": true
     },
     "phase_dwell_seconds": {
       "type": "object",
