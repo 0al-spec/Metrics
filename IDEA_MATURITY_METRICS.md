@@ -339,10 +339,13 @@ thresholds, next actions, readiness blockers, policy findings, scores, approval
 state, promotion state, Git authority, or ontology authority for these counts.
 Downstream producers and consumers may interpret the observations in their own
 readiness surfaces, but that interpretation must remain separate from the metric
-contract. If a producer emits a `readiness_explainers[]` item for these
-observations, it should use the neutral `candidate_structure_review` block
-category rather than mapping structural depth to approval, promotion, Git, or
-publication authority.
+contract. In the current `v0` readiness-explainer contract, `blocks[]` is a
+closed enum. Producers must not add structural-depth-specific block values
+without a contract/version migration. If a producer emits a
+`readiness_explainers[]` item for these observations, the structural
+interpretation should remain visible through `kind`, `source`, `message`,
+`next_action`, and `evidence_refs`, not by overloading approval, promotion, Git,
+or publication authority blocks.
 
 ### 6. Workflow Friction
 

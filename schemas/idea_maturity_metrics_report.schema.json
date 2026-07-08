@@ -843,7 +843,6 @@
           "items": {
             "enum": [
               "pre_sib_review",
-              "candidate_structure_review",
               "metrics_validation",
               "candidate_approval",
               "platform_promotion",
