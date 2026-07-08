@@ -355,6 +355,16 @@ continue to publish only objective counts and validation status; it must not
 define the prompt wording, answer schema, rerun policy, readiness gate, score,
 or authority boundary for those clarification loops.
 
+When producers use `workflow_edge_count = 0` to ask for workflow-topology
+repair, the repair remains a producer-side interpretation of existing
+event-storming evidence. The Metrics contract does not define relation answer
+schemas, but safe producer implementations should treat those answers as typed
+links between already-published event-storming references, for example
+actor-command, command-event, event-policy, event-constraint, policy-command, or
+constraint-command links. Metrics consumers must not infer ontology acceptance,
+canonical spec mutation, implementation dependencies, or promotion readiness
+from the presence or absence of those repair prompts.
+
 ### 6. Workflow Friction
 
 These metrics expose where the product lane still depends on manual operator
