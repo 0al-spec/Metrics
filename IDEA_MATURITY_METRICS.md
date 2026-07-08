@@ -325,17 +325,24 @@ new maturity score and they do not replace existing lifecycle metrics such as
 | `requirement_count` | Candidate requirements attached to material candidate nodes. |
 | `acceptance_criteria_count` | Acceptance criteria attached to material candidate nodes. |
 
-Interpretation: these are raw structural observations. `actor_count = 0` or
-`domain_event_count = 0` usually means the event-storming model is shallow.
-`workflow_edge_count = 0` means the candidate is likely a flat node list rather
-than an inspectable workflow model. `requirement_count = 0` or
-`acceptance_criteria_count = 0` means candidate materialization exists without
-enough spec-level verification surface.
+Interpretation boundary: these are raw structural observations. Zero values are
+valid measurements, not validation failures. For example, `actor_count = 0` or
+`domain_event_count = 0` records that the event-storming model currently lacks
+that structure; `workflow_edge_count = 0` records that the candidate graph is
+flat from the workflow-topology perspective; `requirement_count = 0` or
+`acceptance_criteria_count = 0` records that material candidate nodes currently
+lack those verification surfaces.
 
 These observations should be reported in
-`groups.candidate_structure_depth`. Producers may also emit readiness explainers
-or policy findings when a shallow structure blocks a product-facing flow, but
-the metrics themselves do not grant approval, promotion, or Git authority.
+`groups.candidate_structure_depth`. Metrics does not define product-specific
+thresholds, next actions, readiness blockers, policy findings, scores, approval
+state, promotion state, Git authority, or ontology authority for these counts.
+Downstream producers and consumers may interpret the observations in their own
+readiness surfaces, but that interpretation must remain separate from the metric
+contract. If a producer emits a `readiness_explainers[]` item for these
+observations, it should use the neutral `candidate_structure_review` block
+category rather than mapping structural depth to approval, promotion, Git, or
+publication authority.
 
 ### 6. Workflow Friction
 
